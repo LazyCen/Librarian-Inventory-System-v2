@@ -1,0 +1,427 @@
+/**
+ * Librarian Inventory System - Authentication Styles
+ * 
+ * Design: Modern Glassmorphism with Atmospheric Floating Effects
+ * 
+ * [Changelog]
+ * - Standardized naming conventions.
+ * - Centralized design tokens for layout and color.
+ * - Removed inline styles to external classes while preserving exact layout.
+ */
+
+/* ==========================================================================
+   1. Design Tokens & Configuration
+   ========================================================================== */
+
+:root {
+    /* UI Palette */
+    --auth-bg-center:    #1565c0;
+    --auth-bg-edge:      #061848;
+    --card-bg:           rgba(255, 255, 255, 0.10);
+    --card-border:       rgba(255, 255, 255, 0.18);
+    --text-primary:      #ffffff;
+    --text-secondary:    rgba(255, 255, 255, 0.65);
+    --input-surface:     rgba(255, 255, 255, 0.94);
+    
+    /* Brand Colors */
+    --accent-blue:       #1976d2;
+    --accent-green:      #166534;
+    --btn-primary-bg:    #0d1b3e;
+    --btn-primary-hover: #162b52;
+    
+    /* Layout Tokens */
+    --card-max-width:    380px;
+    --card-padding:      36px 32px;
+    --input-radius:      8px;
+    --button-radius:     10px;
+    
+    /* Elevation */
+    --card-shadow:       0 24px 64px rgba(0, 0, 0, 0.45);
+}
+
+/* ==========================================================================
+   2. Background Atmosphere
+   ========================================================================== */
+
+.login-body {
+    background: radial-gradient(ellipse at 50% 50%,
+        var(--auth-bg-center) 0%,
+        #0d47a1 35%,
+        #0a2a6e 70%,
+        var(--auth-bg-edge) 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.books-layer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.book {
+    position: absolute;
+    opacity: 0;
+    will-change: transform, opacity;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.book i {
+    font-size: 100%;
+}
+
+/* ==========================================================================
+   3. Glassmorphism Landing Card
+   ========================================================================== */
+
+.glass-container {
+    background: var(--card-bg);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--card-border);
+    border-radius: 22px;
+    box-shadow: var(--card-shadow);
+    padding: var(--card-padding);
+    width: 100%;
+    max-width: var(--card-max-width);
+    z-index: 10;
+    box-sizing: border-box;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.animate-fade-in {
+    animation: fadeInCard 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInCard {
+    from { opacity: 0; transform: translateY(24px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ==========================================================================
+   4. Branding & Typography
+   ========================================================================== */
+
+.login-logo-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.login-logo-icon {
+    font-size: 2rem;
+    color: #fff;
+    filter: drop-shadow(0 2px 8px rgba(0, 100, 255, 0.4));
+}
+
+.login-system-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.85);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1.25;
+    max-width: 130px;
+}
+
+.auth-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    letter-spacing: 0.01em;
+}
+
+.divider-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 20px 0;
+}
+
+.divider-line {
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.divider-text {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.register-text {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 16px;
+}
+
+.register-text a {
+    color: #fff;
+    font-weight: 700;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.register-text a:hover {
+    text-decoration: underline;
+}
+
+/* ==========================================================================
+   5. Interactive Components (Inputs, Buttons)
+   ========================================================================== */
+
+.auth-input {
+    width: 100%;
+    background: var(--input-surface);
+    border: 1px solid transparent;
+    border-radius: var(--input-radius);
+    padding: 12px 14px;
+    font-size: 0.95rem;
+    color: #1a202c;
+    outline: none;
+    transition: all 0.25s ease;
+    box-sizing: border-box;
+}
+
+.auth-input:focus {
+    background: #fff;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.2);
+}
+
+.input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.toggle-pw {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.toggle-pw:hover {
+    color: #475569;
+}
+
+.btn-signin {
+    width: 100%;
+    background: var(--btn-primary-bg);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 12px;
+    border-radius: var(--button-radius);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-signin:hover {
+    background: var(--btn-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.forgot-link-container {
+    text-align: left;
+    margin-bottom: 4px;
+}
+
+.forgot-link {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.75);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.forgot-link:hover {
+    color: #fff;
+}
+
+.social-grid {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.social-btn {
+    flex: 1;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--button-radius);
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 50px;
+}
+
+.social-btn:hover {
+    background: #f8fafc;
+    transform: translateY(-2px);
+}
+
+.social-btn img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
+/* ==========================================================================
+   6. Feedback & Notifications
+   ========================================================================== */
+
+.auth-notice {
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.auth-notice.animate-shake {
+    animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+.auth-notice.error {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    color: #fca5a5;
+}
+
+.auth-notice.success {
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid rgba(34, 197, 94, 0.25);
+    color: #bbf7d0;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+.hidden { display: none !important; }
+
+/* ==========================================================================
+   7. Role Picker (Registration Step 1)
+   ========================================================================== */
+
+.role-select-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-align: center;
+    margin: 0 0 14px;
+    letter-spacing: 0.02em;
+}
+
+.role-picker-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.role-picker-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 18px 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1.5px solid rgba(255, 255, 255, 0.15);
+    border-radius: 14px;
+    cursor: pointer;
+    color: #fff;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.role-picker-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.06), transparent);
+    opacity: 0;
+    transition: opacity 0.25s;
+}
+
+.role-picker-btn:hover {
+    border-color: rgba(255, 255, 255, 0.45);
+    background: rgba(255, 255, 255, 0.14);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.role-picker-btn:hover::before { opacity: 1; }
+
+.role-picker-btn.selected {
+    border-color: #60a5fa;
+    background: rgba(96, 165, 250, 0.18);
+    box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.35), 0 8px 24px rgba(0,0,0,0.3);
+}
+
+.role-icon {
+    font-size: 1.7rem;
+    line-height: 1;
+    filter: drop-shadow(0 2px 6px rgba(0, 100, 255, 0.35));
+}
+
+.role-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.role-desc {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.55);
+    font-weight: 400;
+}
+
+/* Badge shown once a role is selected (step 2 header) */
+.role-selected-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: rgba(96, 165, 250, 0.15);
+    border: 1px solid rgba(96, 165, 250, 0.35);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #bfdbfe;
+    margin-bottom: 4px;
+}
+
+/* [EOF] */

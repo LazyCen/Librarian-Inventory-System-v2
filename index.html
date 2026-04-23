@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Librarian Inventory System</title>
+    <meta
+      name="description"
+      content="Librarian Inventory System — manage and track your library resources with ease."
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
+    <link rel="stylesheet" href="src/css/styles.css" />
+    <link rel="stylesheet" href="src/css/auth/styles.css" />
+
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        height: 100vh;
+        margin: 0;
+      }
+      #auth-section {
+        background: transparent !important;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Floating Books Layer -->
+    <div class="books-layer" id="booksLayer"></div>
+
+    <!--  AUTH SECTION  -->
+
+    <div id="auth-section" class="login-body">
+
+      <!-- Login Card -->
+      <div
+        class="glass-container animate-fade-in"
+        style="width: 100%; max-width: 380px; padding: 36px 32px; z-index: 10"
+      >
+        <!-- Logo + System Name -->
+        <div class="login-logo-row">
+          <i class="fas fa-book-open login-logo-icon"></i>
+          <span class="login-system-title">Librarian Inventory System</span>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <form
+          id="loginForm"
+          style="display: flex; flex-direction: column; gap: 14px"
+        >
+          <div>
+            <label class="auth-label" for="loginEmail">Email</label>
+            <input
+              id="loginEmail"
+              type="email"
+              required
+              class="auth-input"
+              placeholder="vincent@example.com"
+            />
+          </div>
+
+          <div>
+            <label class="auth-label" for="loginPassword">Password</label>
+            <div class="input-wrapper">
+              <input
+                id="loginPassword"
+                type="password"
+                required
+                class="auth-input"
+                placeholder="Password"
+                style="padding-right: 38px"
+              />
+              <button
+                type="button"
+                class="toggle-pw"
+                onclick="togglePw('loginPassword', this)"
+                tabindex="-1"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <div style="text-align: left">
+            <a href="#" class="forgot-link">Forgot Password?</a>
+          </div>
+
+          <button type="submit" class="btn-signin">Sign in</button>
+
+          <!-- Divider -->
+          <div class="divider-row">
+            <div class="divider-line"></div>
+            <span class="divider-text">or continue with</span>
+            <div class="divider-line"></div>
+          </div>
+
+          <!-- Social Buttons -->
+          <div class="social-grid">
+            <button
+              type="button"
+              id="googleLogin"
+              class="social-btn"
+              title="Continue with Google"
+            >
+              <img
+                src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png"
+                alt="Google"
+              />
+            </button>
+            <button
+              type="button"
+              id="facebookLogin"
+              class="social-btn"
+              title="Continue with Facebook"
+            >
+              <i class="fab fa-facebook" style="color: #1877f2"></i>
+            </button>
+          </div>
+
+          <p class="register-text">
+            Don't have an account yet?
+            <a href="#" onclick="toggleAuth(true)">Register for free</a>
+          </p>
+        </form>
+
+        <!-- SIGNUP FORM -->
+        <form
+          id="signupForm"
+          style="display: none; flex-direction: column; gap: 14px"
+        >
+          <!-- STEP 1: Role Selection -->
+          <div id="roleSelectionStep">
+            <p class="role-select-label">I am registering as a...</p>
+            <div class="role-picker-grid">
+              <button
+                type="button"
+                id="roleBtn-faculty"
+                class="role-picker-btn"
+                onclick="selectRole('Faculty')"
+              >
+                <span class="role-icon"><i class="fas fa-chalkboard-teacher"></i></span>
+                <span class="role-name">Faculty</span>
+                <span class="role-desc">Full access</span>
+              </button>
+              <button
+                type="button"
+                id="roleBtn-student"
+                class="role-picker-btn"
+                onclick="selectRole('Student')"
+              >
+                <span class="role-icon"><i class="fas fa-user-graduate"></i></span>
+                <span class="role-name">Student</span>
+                <span class="role-desc">View access</span>
+              </button>
+            </div>
+            <p id="roleNotice" class="auth-notice hidden"></p>
+          </div>
+
+          <!-- STEP 2: Registration Fields (hidden until role chosen) -->
+          <div id="signupFields" style="display:none; flex-direction:column; gap:14px;">
+            <div class="role-selected-badge" id="roleSelectedBadge"></div>
+            <div>
+              <label class="auth-label" for="signupName">Full Name</label>
+              <input
+                id="signupName"
+                type="text"
+                required
+                class="auth-input"
+                placeholder="John W. Doe"
+              />
+            </div>
+            <div>
+              <label class="auth-label" for="signupEmail">Email</label>
+              <input
+                id="signupEmail"
+                type="email"
+                required
+                class="auth-input"
+                placeholder="vincent@example.com"
+              />
+            </div>
+            <label class="auth-label" for="signupPassword">Password</label>
+            <div class="input-wrapper">
+              <input
+                id="signupPassword"
+                type="password"
+                required
+                class="auth-input"
+                placeholder="Password"
+                style="padding-right: 38px"
+              />
+              <button
+                type="button"
+                class="toggle-pw"
+                onclick="togglePw('signupPassword', this)"
+                tabindex="-1"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+            <button type="submit" class="btn-signin" style="background: #166534">
+              Create Account
+            </button>
+            <p class="register-text" style="text-align:center;font-size:0.78rem;">
+              <a href="#" onclick="resetRoleStep()" style="color:rgba(255,255,255,0.6);">
+                <i class="fas fa-arrow-left" style="font-size:0.7rem;"></i> Change role
+              </a>
+            </p>
+          </div>
+
+          <p class="register-text">
+            Already have an account?
+            <a href="#" onclick="toggleAuth(false)">Log In</a>
+          </p>
+        </form>
+        <div id="authNotice" class="auth-notice hidden"></div>
+      </div>
+    </div>
+
+    <!--  MAIN DASHBOARD LAYOUT-->
+
+    <div id="main-app" class="app-container hidden">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-logo">
+          <i class="fas fa-book-open logo-icon"></i>
+          <span class="logo-text">Librarian Inventory System</span>
+        </div>
+
+        <nav class="sidebar-nav">
+          <a
+            href="#"
+            class="nav-item"
+            data-view="dashboard"
+            onclick="switchView('dashboard')"
+          >
+            <i class="fas fa-th-large"></i> Dashboard
+          </a>
+          <a
+            href="#"
+            class="nav-item"
+            id="navBinsStatus"
+            data-view="bins"
+            onclick="switchView('bins')"
+          >
+            <i class="fas fa-boxes-stacked"></i> Bins Status
+          </a>
+          <a
+            href="#"
+            class="nav-item"
+            data-view="list"
+            onclick="showAllItems()"
+          >
+            <i class="fas fa-table-list"></i> Books
+          </a>
+        </nav>
+
+        <div style="padding: 24px; margin-top: auto">
+          <button
+            onclick="handleLogout()"
+            class="nav-item"
+            style="width: 100%; border: none; background: transparent"
+          >
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="main-content">
+        <!-- Header -->
+        <header class="top-nav">
+          <button id="mobileMenuToggle" class="mobile-menu-toggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div style="flex: 1" class="header-spacer"></div>
+
+          <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input
+              type="text"
+              id="searchQuery"
+              placeholder="Search by title or category..."
+              onkeyup="handleSearch()"
+            />
+          </div>
+
+          <div class="header-actions">
+            <div class="btn-secondary">
+              <i class="fas fa-book-bookmark"></i> Catalog
+            </div>
+            <button class="btn-primary" id="registerBookBtn" onclick="openAddItemModal()">
+              <i class="fas fa-plus"></i> Register Book
+            </button>
+          </div>
+        </header>
+
+        <!-- Dashboard Title -->
+        <div class="dashboard-header">
+          <div class="page-title">
+            <i class="fas fa-book-open-reader"></i>
+            <span id="currentViewTitle">Dashboard</span>
+          </div>
+          <div class="filter-actions">
+            <button
+              id="filterBtn"
+              class="btn-secondary"
+              onclick="cycleSortMode()"
+            >
+              <i class="fas fa-arrow-down-short-wide"></i> Sort
+            </button>
+          </div>
+        </div>
+
+        <!-- Dashboard View -->
+        <div id="view-dashboard" class="view-content hidden">
+          <div class="stats-grid">
+            <!-- Total Books -->
+            <div class="stats-card">
+              <div class="stats-header">
+                <div
+                  class="stats-icon"
+                  style="background: #e0f2fe; color: #0ea5e9"
+                >
+                  <i class="fas fa-book-open"></i>
+                </div>
+                <span>Total Titles</span>
+              </div>
+              <div class="stats-body">
+                <div>
+                  <div class="stats-number" id="dashTotalBooks">0</div>
+                  <div class="stats-label">In collection</div>
+                </div>
+              </div>
+            </div>
+            <!-- Total Tags -->
+            <div class="stats-card">
+              <div class="stats-header">
+                <div
+                  class="stats-icon"
+                  style="background: #f0fdf4; color: #22c55e"
+                >
+                  <i class="fas fa-tags"></i>
+                </div>
+                <span>Categories</span>
+              </div>
+              <div class="stats-body">
+                <div>
+                  <div class="stats-number" id="dashTotalTags">0</div>
+                  <div class="stats-label">Active tags</div>
+                </div>
+              </div>
+            </div>
+            <!-- Total Bins -->
+            <div class="stats-card">
+              <div class="stats-header">
+                <div
+                  class="stats-icon"
+                  style="background: #fff1f2; color: #f43f5e"
+                >
+                  <i class="fas fa-boxes-stacked"></i>
+                </div>
+                <span>Bin Status</span>
+              </div>
+              <div class="stats-body">
+                <div>
+                  <div class="stats-number" id="dashTotalBins">3</div>
+                  <div class="stats-label">Status types</div>
+                </div>
+              </div>
+            </div>
+            <!-- Recent Activity -->
+            <div class="stats-card">
+              <div class="stats-header">
+                <div
+                  class="stats-icon"
+                  style="background: #fefce8; color: #eab308"
+                >
+                  <i class="fas fa-clock-rotate-left"></i>
+                </div>
+                <span>Recent Adds</span>
+              </div>
+              <div class="stats-body">
+                <div>
+                  <div class="stats-number" id="dashRecentItems">0</div>
+                  <div class="stats-label">Added today</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="librarian-panel">
+            <div class="librarian-widget">
+              <h3><i class="fas fa-list-check"></i>Quick Actions</h3>
+              <div class="librarian-actions">
+                <button class="btn-secondary" onclick="showAllItems()">
+                  <i class="fas fa-book-open"></i> View Full Catalog
+                </button>
+                <button class="btn-secondary" onclick="filterRecentItems()">
+                  <i class="fas fa-clock"></i> New Arrivals
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category Breakdown -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <span class="chart-title"
+                ><i
+                ></i>
+                Categories</span
+              >
+            </div>
+            <div class="chart-content">
+              <div class="chart-viz">
+                <svg
+                  class="donut-svg"
+                  width="200"
+                  height="200"
+                  id="dashDonutChart"
+                >
+                  <!-- Donut segments will be injected here -->
+                </svg>
+                <div class="chart-center">
+                  <div class="center-label" id="donutCenterIcon">
+                    <i class="fas fa-tags"></i>
+                  </div>
+                  <div class="center-val" id="donutCenterText">Category</div>
+                  <div class="center-sub" id="donutCenterSub">Loading...</div>
+                </div>
+              </div>
+              <div class="category-list" id="dashCategoryList">
+                <!-- Category items will be injected here -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Borrowed Monitoring -->
+          <div class="chart-card" style="margin-top: 24px">
+            <div
+              class="chart-header"
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <span class="chart-title" style="font-weight: 700">
+                <i
+                  style="margin-right: 8px"
+                ></i>
+                Borrowed Books
+              </span>
+            </div>
+            <div id="dashBorrowedList" class="dash-borrowed-container">
+              <!-- Content injected by main.js -->
+            </div>
+          </div>
+
+          <!-- Live Returned Monitoring -->
+          <div class="chart-card" style="margin-top: 24px">
+            <div
+              class="chart-header"
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <span class="chart-title" style="font-weight: 700">
+                Returned Books
+              </span>
+            </div>
+            <div id="dashReturnedList" class="dash-returned-container">
+              <!-- Content injected by main.js -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div id="view-list" class="view-content hidden">
+          <div class="flex items-center gap-4 mb-6">
+            <span style="font-weight: 700; color: var(--text-main)"
+              >Books Records</span
+            >
+            <span
+              id="itemCount"
+              style="color: var(--text-muted); font-size: 0.9rem"
+              >0 Titles</span
+            >
+          </div>
+          <div class="list-toolbar">
+            <button class="btn-secondary" onclick="switchView('dashboard')">
+              <i class="fas fa-chart-pie"></i> Back to Dashboard
+            </button>
+          </div>
+          <div id="inventoryList" class="item-grid fade-in"></div>
+        </div>
+
+        <div id="view-bins" class="view-content hidden">
+          <h2 class="bins-title">Status Overview</h2>
+          <div id="binStatus" class="bins-grid"></div>
+        </div>
+      </main>
+
+      <!-- Right Sidebar -->
+      <aside class="right-sidebar">
+        <!-- USERS PANEL
+                 Shows all registered users with live online/offline
+                 status. Updated automatically on login / logout. -->
+
+        <div class="users-panel-wrap">
+          <div class="users-panel-header">
+            <span class="users-panel-title">
+              <i class="fas fa-users"></i> Users
+            </span>
+            <span class="users-count-badge" id="usersOnlineCount"
+              >All Offline</span
+            >
+          </div>
+          <div id="usersList">
+            <!-- Populated by src/js/utils/users.js -->
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Modal -->
+    <div id="addItemModal" class="modal-overlay hidden">
+      <div class="modal-content animate-fade-in">
+        <div class="modal-header">
+          <h3 id="itemModalTitle" class="modal-title">Register New Book</h3>
+          <button
+            onclick="closeAddItemModal()"
+            style="
+              background: none;
+              border: none;
+              font-size: 1.5rem;
+              cursor: pointer;
+              color: white;
+            "
+          >
+            &times;
+          </button>
+        </div>
+        <form id="addItemForm">
+          <div class="form-group">
+            <label class="form-label">Book Title</label>
+            <input
+              type="text"
+              id="itemName"
+              class="form-input"
+              placeholder="e.g. Fatty the Fat Lazy Cat"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Author Name</label>
+            <input
+              type="text"
+              id="itemAuthor"
+              class="form-input"
+              placeholder="e.g.  Cathy H. "
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Categories</label>
+            <input
+              type="text"
+              id="itemTags"
+              class="form-input"
+              placeholder="e.g. Fiction, Non-Fiction, Academic Work"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Bin Status</label>
+            <select
+              id="itemBinSelection"
+              class="form-input"
+              onchange="toggleBorrowerField()"
+              style="
+                padding: 12px;
+                border-radius: 8px;
+                border: 1px solid var(--border-color);
+                width: 100%;
+                cursor: pointer;
+              "
+            >
+              <option value="Added">Register</option>
+            </select>
+          </div>
+          <div
+            id="borrowerFieldGroup"
+            class="form-group hidden"
+            style="margin-bottom: 24px"
+          >
+            <label class="form-label">Who borrowed this book?</label>
+            <input
+              type="text"
+              id="itemBorrower"
+              class="form-input"
+              placeholder="Enter user's name or email"
+            />
+          </div>
+          <div
+            id="returnerFieldGroup"
+            class="form-group hidden"
+            style="margin-bottom: 24px"
+          >
+            <label class="form-label">Who returned this book?</label>
+            <input
+              type="text"
+              id="itemReturner"
+              class="form-input"
+              placeholder="Enter user's name or email"
+            />
+          </div>
+          <button
+            id="itemSubmitBtn"
+            type="submit"
+            class="btn-primary"
+            style="width: 100%; justify-content: center"
+          >
+            Add to Catalog
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div id="confirmModal" class="confirm-overlay hidden">
+      <div class="confirm-card animate-fade-in">
+        <div class="confirm-icon-wrap">
+          <i class="fas fa-triangle-exclamation"></i>
+        </div>
+        <h3 class="confirm-title">Confirm Delete</h3>
+        <p id="confirmMessage" class="confirm-message">
+          Are you sure you want to continue?
+        </p>
+        <div class="confirm-actions">
+          <button
+            type="button"
+            class="confirm-btn cancel"
+            onclick="closeConfirmModal()"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="confirm-btn danger"
+            onclick="confirmModalAccept()"
+          >
+            Delete Book
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="sidebarOverlay" class="sidebar-overlay hidden"></div>
+    <div id="messageBox" class="hidden"></div>
+
+    <!-- Scripts -->
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Utility Scripts -->
+    <script src="src/js/utils/helpers.js"></script>
+    <script src="src/js/utils/storage.js"></script>
+    <script src="src/js/utils/togglePw.js"></script>
+    <script src="src/js/utils/toggleAuth.js"></script>
+    <script src="src/js/utils/users.js"></script>
+    <script src="src/js/utils/handleLogin.js"></script>
+    <script src="src/js/utils/handleLogout.js"></script>
+    <script src="src/js/utils/openAddItemModal.js"></script>
+    <script src="src/js/utils/closeAddItemModal.js"></script>
+    <script src="src/js/utils/spawnBooks.js"></script>
+    <script src="src/js/utils/loginAnimations.js"></script>
+    <script src="src/js/utils/reports_ui.js"></script>
+
+    <script src="src/js/main.js"></script>
+    <script src="src/js/components/reports.js"></script>
+  </body>
+</html>

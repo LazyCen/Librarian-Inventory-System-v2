@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel — Librarian Inventory System</title>
+    <meta name="description" content="Admin control panel for managing all requests, users, and books in the Librarian Inventory System." />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body>
+
+    <!-- ===== BACKGROUND ORBS ===== -->
+    <div class="bg-orbs" aria-hidden="true">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+
+    <!-- ===== MAIN ADMIN APP ===== -->
+    <div id="admin-app" class="admin-app">
+
+      <!-- ===== SIDEBAR ===== -->
+      <aside class="admin-sidebar" id="adminSidebar">
+        <div class="sidebar-brand">
+          <div class="brand-text">
+            <span class="brand-title">Admin Panel</span>
+            <span class="brand-sub">Librarian System</span>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <button class="nav-btn active" data-section="overview" onclick="switchSection('overview')">
+            <i class="fas fa-chart-pie"></i>
+            <span>Overview</span>
+          </button>
+          <button class="nav-btn" data-section="requests" onclick="switchSection('requests')">
+            <i class="fas fa-inbox"></i>
+            <span>All Requests</span>
+            <span class="nav-badge" id="navRequestsBadge">0</span>
+          </button>
+          <button class="nav-btn" data-section="users" onclick="switchSection('users')">
+            <i class="fas fa-users"></i>
+            <span>Users</span>
+          </button>
+          <button class="nav-btn" data-section="books" onclick="switchSection('books')">
+            <i class="fas fa-book-open"></i>
+            <span>Books</span>
+          </button>
+          <button class="nav-btn" data-section="activity" onclick="switchSection('activity')">
+            <i class="fas fa-clock-rotate-left"></i>
+            <span>Activity Log</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="admin-profile">
+            <div class="admin-avatar">A</div>
+            <div class="admin-info">
+              <span class="admin-name">Administrator</span>
+              <span class="admin-email">Local Admin</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ===== MAIN CONTENT ===== -->
+      <div class="admin-main">
+
+        <!-- Top Bar -->
+        <header class="admin-topbar">
+          <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileSidebar()">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="topbar-title">
+            <h2 id="topbarTitle">Overview</h2>
+          </div>
+          <div class="topbar-actions">
+            <div class="live-indicator">
+              <span class="live-dot"></span>
+              <span>Live</span>
+            </div>
+            <button class="btn-refresh" onclick="refreshAll()" title="Refresh data">
+              <i class="fas fa-rotate-right"></i>
+            </button>
+          </div>
+        </header>
+
+        <!-- ===== SECTION: OVERVIEW ===== -->
+        <section id="section-overview" class="admin-section active">
+
+          <!-- Stats Grid -->
+          <div class="stats-grid">
+            <div class="stat-card stat-blue">
+              <div class="stat-icon"><i class="fas fa-book-open"></i></div>
+              <div class="stat-body">
+                <div class="stat-num" id="statTotalBooks">0</div>
+                <div class="stat-label">Total Books</div>
+              </div>
+              <div class="stat-glow"></div>
+            </div>
+            <div class="stat-card stat-amber">
+              <div class="stat-icon"><i class="fas fa-hand-holding-hand"></i></div>
+              <div class="stat-body">
+                <div class="stat-num" id="statBorrowed">0</div>
+                <div class="stat-label">Borrowed</div>
+              </div>
+              <div class="stat-glow"></div>
+            </div>
+            <div class="stat-card stat-green">
+              <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+              <div class="stat-body">
+                <div class="stat-num" id="statReturned">0</div>
+                <div class="stat-label">Returned</div>
+              </div>
+              <div class="stat-glow"></div>
+            </div>
+            <div class="stat-card stat-purple">
+              <div class="stat-icon"><i class="fas fa-users"></i></div>
+              <div class="stat-body">
+                <div class="stat-num" id="statUsers">0</div>
+                <div class="stat-label">Registered Users</div>
+              </div>
+              <div class="stat-glow"></div>
+            </div>
+            <div class="stat-card stat-rose">
+              <div class="stat-icon"><i class="fas fa-inbox"></i></div>
+              <div class="stat-body">
+                <div class="stat-num" id="statPendingRequests">0</div>
+                <div class="stat-label">Active Borrows</div>
+              </div>
+              <div class="stat-glow"></div>
+            </div>
+            <div class="stat-card stat-cyan">
+              <div class="stat-icon"><i class="fas fa-tags"></i></div>
+              <div class="stat-body">
+                <div class="stat-num" id="statCategories">0</div>
+                <div class="stat-label">Categories</div>
+              </div>
+              <div class="stat-glow"></div>
+            </div>
+          </div>
+
+          <!-- Quick Panels Row -->
+          <div class="panels-row">
+
+            <!-- Recent Borrows -->
+            <div class="panel">
+              <div class="panel-header">
+                <span class="panel-title">Recent Borrows</span>
+                <button class="panel-link" onclick="switchSection('requests')">View all</button>
+              </div>
+              <div id="overviewBorrows" class="panel-body"></div>
+            </div>
+
+            <!-- Recent Returns -->
+            <div class="panel">
+              <div class="panel-header">
+                <span class="panel-title">Recent Returns</span>
+                <button class="panel-link" onclick="switchSection('books')">View all</button>
+              </div>
+              <div id="overviewReturns" class="panel-body"></div>
+            </div>
+
+            <!-- Users Panel -->
+            <div class="panel">
+              <div class="panel-header">
+                <span class="panel-title">Users</span>
+                <button class="panel-link" onclick="switchSection('users')">View all</button>
+              </div>
+              <div id="overviewUsers" class="panel-body"></div>
+            </div>
+
+          </div>
+
+          <!-- Category Breakdown -->
+          <div class="panel full-panel">
+            <div class="panel-header">
+              <span class="panel-title">Category Breakdown</span>
+            </div>
+            <div id="overviewCategories" class="category-bar-container"></div>
+          </div>
+
+        </section>
+
+        <!-- ===== SECTION: ALL REQUESTS ===== -->
+        <section id="section-requests" class="admin-section">
+
+          <div class="section-toolbar">
+            <div class="filter-tabs" id="requestTabs">
+              <button class="filter-tab active" data-filter="all" onclick="filterRequests('all', this)">All</button>
+              <button class="filter-tab" data-filter="Borrowed" onclick="filterRequests('Borrowed', this)">Borrowed</button>
+              <button class="filter-tab" data-filter="Returned" onclick="filterRequests('Returned', this)">Returned</button>
+              <button class="filter-tab" data-filter="Books" onclick="filterRequests('Books', this)">In Library</button>
+            </div>
+            <div class="toolbar-search">
+              <i class="fas fa-search"></i>
+              <input type="text" id="requestSearch" placeholder="Search book or borrower…" oninput="renderRequests()" />
+            </div>
+          </div>
+
+          <div id="requestsTableWrap" class="table-wrap">
+            <table class="admin-table" id="requestsTable">
+              <thead>
+                <tr>
+                  <th>#ID</th>
+                  <th>Book Title</th>
+                  <th>Author</th>
+                  <th>Status</th>
+                  <th>Person</th>
+                  <th>Categories</th>
+                  <th>Date Added</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="requestsTbody"></tbody>
+            </table>
+            <div id="requestsEmpty" class="table-empty hidden">
+              <i class="fas fa-inbox"></i>
+              <p>No requests found.</p>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ===== SECTION: USERS ===== -->
+        <section id="section-users" class="admin-section">
+
+          <div class="section-toolbar">
+            <div class="filter-tabs">
+              <button class="filter-tab active" data-filter="all" onclick="filterUsers('all', this)">All Users</button>
+              <button class="filter-tab" data-filter="Faculty" onclick="filterUsers('Faculty', this)">Faculty</button>
+              <button class="filter-tab" data-filter="Student" onclick="filterUsers('Student', this)">Students</button>
+            </div>
+            <div class="toolbar-search">
+              <i class="fas fa-search"></i>
+              <input type="text" id="userSearch" placeholder="Search by name or email…" oninput="renderUsers()" />
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Joined</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="usersTbody"></tbody>
+            </table>
+            <div id="usersEmpty" class="table-empty hidden">
+              <i class="fas fa-user-slash"></i>
+              <p>No users found.</p>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ===== SECTION: BOOKS ===== -->
+        <section id="section-books" class="admin-section">
+
+          <div class="section-toolbar">
+            <div class="filter-tabs">
+              <button class="filter-tab active" data-filter="all" onclick="filterBooks('all', this)">All</button>
+              <button class="filter-tab" data-filter="Books" onclick="filterBooks('Books', this)">In Library</button>
+              <button class="filter-tab" data-filter="Borrowed" onclick="filterBooks('Borrowed', this)">Borrowed</button>
+              <button class="filter-tab" data-filter="Returned" onclick="filterBooks('Returned', this)">Returned</button>
+              <button class="filter-tab" data-filter="Added" onclick="filterBooks('Added', this)">Registered</button>
+            </div>
+            <div class="toolbar-search">
+              <i class="fas fa-search"></i>
+              <input type="text" id="bookSearch" placeholder="Search title, author…" oninput="renderBooks()" />
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>#ID</th>
+                  <th>Title</th>
+                  <th>Author</th>
+                  <th>Status</th>
+                  <th>Categories</th>
+                  <th>Borrower / Returner</th>
+                  <th>Date Added</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="booksTbody"></tbody>
+            </table>
+            <div id="booksEmpty" class="table-empty hidden">
+              <i class="fas fa-book-open"></i>
+              <p>No books found.</p>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ===== SECTION: ACTIVITY LOG ===== -->
+        <section id="section-activity" class="admin-section">
+          <div class="activity-timeline" id="activityTimeline">
+            <!-- Populated by JS -->
+          </div>
+          <div id="activityEmpty" class="table-empty hidden">
+            <i class="fas fa-clock-rotate-left"></i>
+            <p>No activity recorded yet.</p>
+          </div>
+        </section>
+
+      </div><!-- /admin-main -->
+
+    </div><!-- /admin-app -->
+
+    <!-- ===== TOAST NOTIFICATIONS ===== -->
+    <div id="adminToast" class="admin-toast hidden"></div>
+
+    <!-- ===== CONFIRM MODAL ===== -->
+    <div id="adminConfirm" class="admin-modal-overlay hidden">
+      <div class="admin-modal-card animate-fade-in">
+        <div class="modal-icon-wrap danger">
+          <i class="fas fa-triangle-exclamation"></i>
+        </div>
+        <h3 id="confirmTitle">Are you sure?</h3>
+        <p id="confirmMsg">This action cannot be undone.</p>
+        <div class="modal-actions">
+          <button class="btn-cancel" onclick="closeAdminConfirm()">Cancel</button>
+          <button class="btn-danger" id="confirmOkBtn" onclick="executeAdminConfirm()">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== USER DETAIL MODAL ===== -->
+    <div id="userDetailModal" class="admin-modal-overlay hidden">
+      <div class="admin-modal-card wide animate-fade-in">
+        <div class="modal-header-row">
+          <h3><i class="fas fa-user-circle"></i> User Details</h3>
+          <button class="modal-close" onclick="closeModal('userDetailModal')"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="userDetailBody"></div>
+        <div class="modal-actions">
+          <button class="btn-cancel" onclick="closeModal('userDetailModal')">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== BOOK DETAIL MODAL ===== -->
+    <div id="bookDetailModal" class="admin-modal-overlay hidden">
+      <div class="admin-modal-card wide animate-fade-in">
+        <div class="modal-header-row">
+          <h3><i class="fas fa-book-open"></i> Book Details</h3>
+          <button class="modal-close" onclick="closeModal('bookDetailModal')"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="bookDetailBody"></div>
+        <div class="modal-actions">
+          <button class="btn-cancel" onclick="closeModal('bookDetailModal')">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar mobile overlay -->
+    <div id="sidebarOverlay" class="sidebar-mobile-overlay hidden" onclick="toggleMobileSidebar()"></div>
+
+    <script src="admin.js"></script>
+  </body>
+</html>

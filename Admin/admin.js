@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const me = users.find(u => u.email === currentEmail);
     if (me) {
       document.querySelector('.admin-name').textContent = me.fullName || me.email.split('@')[0];
-      document.querySelector('.admin-email').textContent = 'Faculty Admin';
+      document.querySelector('.admin-email').textContent = `${me.role || 'Faculty'} Admin`;
       document.querySelector('.admin-avatar').textContent = initials(me.fullName, me.email);
       document.querySelector('.admin-avatar').style.background = avatarColor(me.email);
     }
@@ -437,6 +437,7 @@ function showUserDetail(email) {
         <div style="color:var(--text-muted);font-size:.85rem">${u.email}</div>
       </div>
     </div>
+    <div class="detail-field"><label>ID Number</label><span>${u.idNumber||'—'}</span></div>
     <div class="detail-field"><label>Role</label><span>${u.role||'Faculty'}</span></div>
     <div class="detail-field"><label>Status</label><span>${online.has(u.email)?'🟢 Online':'⚫ Offline'}</span></div>
     <div class="detail-field"><label>Joined</label><span>${fmtDate(u.createdAt)}</span></div>

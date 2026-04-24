@@ -177,24 +177,56 @@ function handleLogin(e) {
 
     /* ---- SIGNUP ---- */
     if (targetId === 'signupForm') {
-        // Role must be selected first
-        if (!_pendingRole) {
-            // Show notice inside the role step
-            const notice = document.getElementById('roleNotice');
-            if (notice) {
-                notice.textContent = 'Please select a role first.';
-                notice.className = 'auth-notice error';
-            }
-            return;
-        }
-
         const emailInput = document.getElementById('signupEmail');
         const nameInput = document.getElementById('signupName');
+        const idInput = document.getElementById('signupId');
         const passwordInput = document.getElementById('signupPassword');
 
         const email = emailInput?.value?.trim().toLowerCase();
+        const idNumber = idInput?.value?.trim();
+        const fullName = nameInput?.value?.trim();
+        const password = passwordInput?.value;
+
+        if (!fullName) {
+            setAuthNotice('Please enter your full name.', 'error');
+            const notice = document.getElementById('authNotice');
+            if (notice) notice.classList.add('animate-shake');
+            return;
+        }
+
+        if (!idNumber) {
+            setAuthNotice('Please enter your institutional ID number.', 'error');
+            const notice = document.getElementById('authNotice');
+            if (notice) notice.classList.add('animate-shake');
+            return;
+        }
+
         if (!email) {
             setAuthNotice('Please enter an email address.', 'error');
+            const notice = document.getElementById('authNotice');
+            if (notice) notice.classList.add('animate-shake');
+            return;
+        }
+
+        if (!password || password.length < 6) {
+            setAuthNotice('Password must be at least 6 characters.', 'error');
+            const notice = document.getElementById('authNotice');
+            if (notice) notice.classList.add('animate-shake');
+            return;
+        }
+
+        if (!email.endsWith('@gsu.edu.ph')) {
+            setAuthNotice('Please use your @gsu.edu.ph institutional email.', 'error');
+            const notice = document.getElementById('authNotice');
+            if (notice) notice.classList.add('animate-shake');
+            return;
+        }
+
+        const idPart = email.split('@')[0];
+        if (!idPart) {
+            setAuthNotice('Invalid email format.', 'error');
+            const notice = document.getElementById('authNotice');
+            if (notice) notice.classList.add('animate-shake');
             return;
         }
 
@@ -207,6 +239,7 @@ function handleLogin(e) {
 
         users.push({
             fullName: nameInput?.value?.trim() || '',
+            idNumber,
             email,
             password: passwordInput?.value || '',
             role: _pendingRole,
@@ -219,8 +252,8 @@ function handleLogin(e) {
         setAuthNotice('Account created. You can now log in with this email.', 'success');
 
         if (emailInput) {
-            const loginEmail = document.getElementById('loginEmail');
-            if (loginEmail) loginEmail.value = emailInput.value.trim();
+            const loginIdInput = document.getElementById('loginIdentifier');
+            if (loginIdInput) loginIdInput.value = emailInput.value.trim();
         }
         if (typeof toggleAuth === 'function') {
             setTimeout(() => {
@@ -233,21 +266,25 @@ function handleLogin(e) {
 
     /* ---- LOGIN ---- */
     if (targetId === 'loginForm') {
-        const emailInput = document.getElementById('loginEmail');
+        const identifierInput = document.getElementById('loginIdentifier');
         const passwordInput = document.getElementById('loginPassword');
 
-        const email = emailInput?.value?.trim().toLowerCase();
+        const identifier = identifierInput?.value?.trim();
         const password = passwordInput?.value || '';
 
-        if (!email || !password) {
-            setAuthNotice('Please enter both email and password.', 'error');
+        if (!identifier || !password) {
+            setAuthNotice('Please enter your credentials.', 'error');
             return;
         }
 
         const users = getStoredUsers();
-        const matchedUser = users.find((user) => user.email === email);
+        const matchedUser = users.find((user) => 
+            user.email.toLowerCase() === identifier.toLowerCase() || 
+            (user.idNumber && user.idNumber === identifier)
+        );
+
         if (!matchedUser) {
-            setAuthNotice('No account found for this email. Please sign up first.', 'error');
+            setAuthNotice('No account found. Please check your credentials.', 'error');
             return;
         }
 
@@ -269,7 +306,7 @@ function handleLogin(e) {
 
         clearAuthNotice();
         // Mark this user as online in the Users panel
-        if (typeof setUserOnline === 'function') setUserOnline(email);
+        if (typeof setUserOnline === 'function') setUserOnline(matchedUser.email);
     }
 
     if (!isSocialLogin && targetId !== 'loginForm') {
@@ -277,27 +314,10 @@ function handleLogin(e) {
         return;
     }
 
-    /* ---- SOCIAL LOGINS ---- */
-    if (isSocialLogin) {
-        const guestEmail = `guest_${targetId}@social.login`;
-        const users = getStoredUsers();
-        if (!users.some(u => u.email === guestEmail)) {
-            users.push({
-                fullName: targetId === 'googleLogin' ? 'Google User' : 'Facebook User',
-                email: guestEmail,
-                password: '',
-                role: 'Faculty', // Social logins get full access by default
-                createdAt: new Date().toISOString()
-            });
-            saveStoredUsers(users);
-        }
-        // Social login users always get Faculty role
-        localStorage.setItem(CURRENT_ROLE_KEY, 'Faculty');
-        if (typeof setUserOnline === 'function') setUserOnline(guestEmail);
-    }
-
     clearAuthNotice();
     document.getElementById('auth-section').style.display = 'none';
+    const booksLayer = document.getElementById('booksLayer');
+    if (booksLayer) booksLayer.style.display = 'none';
     document.getElementById('main-app').classList.remove('hidden');
 
     // Apply role restrictions now that the dashboard is visible
@@ -313,7 +333,7 @@ function handleLogin(e) {
  * once the document has loaded.
  */
 document.addEventListener('DOMContentLoaded', () => {
-    ['loginForm', 'googleLogin', 'facebookLogin', 'signupForm'].forEach(id => {
+    ['loginForm', 'signupForm'].forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
         el.addEventListener(el.tagName === 'FORM' ? 'submit' : 'click', handleLogin);

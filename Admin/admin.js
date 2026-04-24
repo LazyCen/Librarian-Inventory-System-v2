@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         <h1 style="font-size:2rem;margin-bottom:12px;font-weight:800;">Access Denied</h1>
         <p style="color:rgba(240,246,255,0.6);margin-bottom:32px;max-width:400px;line-height:1.5;">
-          This area is restricted to users with the <strong>Faculty</strong> role. Please log in with a Faculty account to access the Admin Panel.
+          This area is restricted to users. <br> Please log in with a Faculty account to access the Admin Panel.
         </p>
         <a href="../index.html" style="background:linear-gradient(135deg, #1d4ed8, #7c3aed);color:white;padding:12px 28px;border-radius:10px;text-decoration:none;font-weight:600;transition:all 0.2s;box-shadow:0 8px 20px rgba(59,130,246,0.3);">
           <i class="fas fa-arrow-left" style="margin-right:8px;"></i> Return to Main App

@@ -60,24 +60,60 @@ let _pendingRole = null;
 function selectRole(role) {
     _pendingRole = role;
 
-    // Highlight selected button
-    document.querySelectorAll('.role-picker-btn').forEach(btn => btn.classList.remove('selected'));
+    // Highlight selected button (optional now as we transition away immediately)
+    document.querySelectorAll('.role-picker-grid .role-picker-btn').forEach(btn => btn.classList.remove('selected'));
     const selectedBtn = document.getElementById(`roleBtn-${role.toLowerCase()}`);
     if (selectedBtn) selectedBtn.classList.add('selected');
 
-    // Show badge with chosen role
-    const badge = document.getElementById('roleSelectedBadge');
-    if (badge) {
-        const icon = role === 'Faculty' ? 'fa-chalkboard-teacher' : 'fa-user-graduate';
-        const color = role === 'Faculty' ? '#fde68a' : '#bfdbfe';
-        badge.innerHTML = `<i class="fas ${icon}" style="color:${color}"></i> Registering as <strong>${role}</strong>`;
+    // Update badges in both login and signup forms
+    const signupBadge = document.getElementById('roleSelectedBadge');
+    const loginBadgeContent = document.getElementById('loginRoleBadgeContent');
+    
+    const icon = role === 'Faculty' ? 'fa-chalkboard-teacher' : 'fa-user-graduate';
+    const color = role === 'Faculty' ? '#fde68a' : '#bfdbfe';
+    const badgeHTML = `<i class="fas ${icon}" style="color:${color}"></i> ${role === 'Faculty' ? 'Faculty' : 'Student'} Access`;
+
+    if (signupBadge) {
+        signupBadge.innerHTML = `<i class="fas ${icon}" style="color:${color}"></i> Registering as <strong>${role}</strong>`;
+    }
+    if (loginBadgeContent) {
+        loginBadgeContent.innerHTML = badgeHTML;
     }
 
-    // Transition to step 2
-    const step1 = document.getElementById('roleSelectionStep');
-    const step2 = document.getElementById('signupFields');
-    if (step1) step1.style.display = 'none';
-    if (step2) step2.style.display = 'flex';
+    // Transition to login form by default
+    const selector = document.getElementById('roleSelector');
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    
+    if (selector) selector.style.display = 'none';
+    
+    // We default to login form after role selection
+    if (loginForm) loginForm.style.display = 'flex';
+    if (signupForm) signupForm.style.display = 'none';
+}
+
+/**
+ * Returns to the initial role selection screen.
+ */
+function goBackToRoleSelection() {
+    _pendingRole = null;
+    
+    const selector = document.getElementById('roleSelector');
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    const authNotice = document.getElementById('authNotice');
+
+    if (selector) selector.style.display = 'flex';
+    if (loginForm) loginForm.style.display = 'none';
+    if (signupForm) signupForm.style.display = 'none';
+    
+    if (authNotice) {
+        authNotice.className = 'auth-notice hidden';
+        authNotice.textContent = '';
+    }
+    
+    // Reset button highlights
+    document.querySelectorAll('.role-picker-grid .role-picker-btn').forEach(btn => btn.classList.remove('selected'));
 }
 
 /**
@@ -85,13 +121,7 @@ function selectRole(role) {
  * Called when the user clicks "Change role".
  */
 function resetRoleStep() {
-    _pendingRole = null;
-    document.querySelectorAll('.role-picker-btn').forEach(btn => btn.classList.remove('selected'));
-
-    const step1 = document.getElementById('roleSelectionStep');
-    const step2 = document.getElementById('signupFields');
-    if (step1) step1.style.display = '';
-    if (step2) step2.style.display = 'none';
+    // This is now handled by goBackToRoleSelection
 }
 
 /* ------------------------------------------------------------------ */
@@ -135,6 +165,15 @@ function handleLogin(e) {
 
     const targetId = e?.target?.id;
     const isSocialLogin = targetId === 'googleLogin' || targetId === 'facebookLogin';
+
+    // Safety check: Ensure a role is selected before proceeding with login/signup
+    if (!isSocialLogin && (targetId === 'loginForm' || targetId === 'signupForm')) {
+        if (!_pendingRole) {
+            goBackToRoleSelection();
+            setAuthNotice('Please select your role first.', 'error');
+            return;
+        }
+    }
 
     /* ---- SIGNUP ---- */
     if (targetId === 'signupForm') {
@@ -214,6 +253,13 @@ function handleLogin(e) {
 
         if (matchedUser.password !== password) {
             setAuthNotice('Incorrect password. Please try again.', 'error');
+            return;
+        }
+
+        // Role Enforcement: Ensure the account role matches the selected access role
+        const matchedUserRole = matchedUser.role || 'Faculty';
+        if (matchedUserRole !== _pendingRole) {
+            setAuthNotice(`Access Denied: This is a ${matchedUserRole} account.`, 'error');
             return;
         }
 

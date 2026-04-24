@@ -60,11 +60,43 @@
           <span class="login-system-title">Librarian Inventory System</span>
         </div>
 
+        <!-- ROLE SELECTOR -->
+        <div id="roleSelector" style="display: flex; flex-direction: column; gap: 14px">
+          <p class="role-select-label">I am a...</p>
+          <div class="role-picker-grid">
+            <button
+              type="button"
+              id="roleBtn-faculty"
+              class="role-picker-btn"
+              onclick="selectRole('Faculty')"
+            >
+              <span class="role-icon"><i class="fas fa-chalkboard-teacher"></i></span>
+              <span class="role-name">Faculty</span>
+              <span class="role-desc">Full access</span>
+            </button>
+            <button
+              type="button"
+              id="roleBtn-student"
+              class="role-picker-btn"
+              onclick="selectRole('Student')"
+            >
+              <span class="role-icon"><i class="fas fa-user-graduate"></i></span>
+              <span class="role-name">Student</span>
+              <span class="role-desc">View access</span>
+            </button>
+          </div>
+          <p id="roleNotice" class="auth-notice hidden"></p>
+        </div>
+
         <!-- LOGIN FORM -->
         <form
           id="loginForm"
-          style="display: flex; flex-direction: column; gap: 14px"
+          style="display: none; flex-direction: column; gap: 14px"
         >
+          <div class="role-selected-badge" onclick="goBackToRoleSelection()" style="cursor:pointer" title="Click to change role">
+            <span id="loginRoleBadgeContent"></span>
+            <i class="fas fa-chevron-right" style="font-size: 0.7rem; margin-left: auto; opacity: 0.5;"></i>
+          </div>
           <div>
             <label class="auth-label" for="loginEmail">Email</label>
             <input
@@ -116,37 +148,9 @@
           id="signupForm"
           style="display: none; flex-direction: column; gap: 14px"
         >
-          <!-- STEP 1: Role Selection -->
-          <div id="roleSelectionStep">
-            <p class="role-select-label">I am registering as a...</p>
-            <div class="role-picker-grid">
-              <button
-                type="button"
-                id="roleBtn-faculty"
-                class="role-picker-btn"
-                onclick="selectRole('Faculty')"
-              >
-                <span class="role-icon"><i class="fas fa-chalkboard-teacher"></i></span>
-                <span class="role-name">Faculty</span>
-                <span class="role-desc">Full access</span>
-              </button>
-              <button
-                type="button"
-                id="roleBtn-student"
-                class="role-picker-btn"
-                onclick="selectRole('Student')"
-              >
-                <span class="role-icon"><i class="fas fa-user-graduate"></i></span>
-                <span class="role-name">Student</span>
-                <span class="role-desc">View access</span>
-              </button>
-            </div>
-            <p id="roleNotice" class="auth-notice hidden"></p>
-          </div>
-
-          <!-- STEP 2: Registration Fields (hidden until role chosen) -->
-          <div id="signupFields" style="display:none; flex-direction:column; gap:14px;">
-            <div class="role-selected-badge" id="roleSelectedBadge"></div>
+          <!-- Registration Fields -->
+          <div id="signupFields" style="display:flex; flex-direction:column; gap:14px;">
+            <div class="role-selected-badge" id="roleSelectedBadge" onclick="goBackToRoleSelection()" style="cursor:pointer" title="Click to change role"></div>
             <div>
               <label class="auth-label" for="signupName">Full Name</label>
               <input
@@ -189,11 +193,6 @@
             <button type="submit" class="btn-signin" style="background: #166534">
               Create Account
             </button>
-            <p class="register-text" style="text-align:center;font-size:0.78rem;">
-              <a href="#" onclick="resetRoleStep()" style="color:rgba(255,255,255,0.6);">
-                <i class="fas fa-arrow-left" style="font-size:0.7rem;"></i> Change role
-              </a>
-            </p>
           </div>
 
           <p class="register-text">

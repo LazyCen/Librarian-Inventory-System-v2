@@ -78,28 +78,6 @@ function toggleAdminPw(btn) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // --- ROLE BASED ACCESS CONTROL (RBAC) ---
-  const currentRole = localStorage.getItem(CURRENT_ROLE_KEY);
-  
-  if (currentRole !== 'Faculty') {
-    // Access Denied State
-    document.body.innerHTML = `
-      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#0b1929;color:white;font-family:Inter,sans-serif;text-align:center;padding:20px;">
-        <div style="width:80px;height:80px;background:rgba(244,63,94,0.15);border:1px solid rgba(244,63,94,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#f43f5e;font-size:2rem;margin-bottom:24px;">
-          <i class="fas fa-shield-halved"></i>
-        </div>
-        <h1 style="font-size:2rem;margin-bottom:12px;font-weight:800;">Access Denied</h1>
-        <p style="color:rgba(240,246,255,0.6);margin-bottom:32px;max-width:400px;line-height:1.5;">
-          This area is restricted to users. <br> Please log in with a Faculty account to access the Admin Panel.
-        </p>
-        <a href="../index.html" style="background:linear-gradient(135deg, #1d4ed8, #7c3aed);color:white;padding:12px 28px;border-radius:10px;text-decoration:none;font-weight:600;transition:all 0.2s;box-shadow:0 8px 20px rgba(59,130,246,0.3);">
-          <i class="fas fa-arrow-left" style="margin-right:8px;"></i> Return to Main App
-        </a>
-      </div>
-    `;
-    return;
-  }
-
   // Load current user profile into sidebar
   const currentEmail = localStorage.getItem(CURRENT_USER_KEY);
   if (currentEmail) {

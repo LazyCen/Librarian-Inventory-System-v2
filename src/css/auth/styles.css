@@ -145,24 +145,6 @@
     letter-spacing: 0.01em;
 }
 
-.divider-row {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin: 20px 0;
-}
-
-.divider-line {
-    flex: 1;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.15);
-}
-
-.divider-text {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    white-space: nowrap;
-}
 
 .register-text {
     text-align: center;
@@ -262,36 +244,6 @@
     color: #fff;
 }
 
-.social-grid {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-}
-
-.social-btn {
-    flex: 1;
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: var(--button-radius);
-    padding: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    min-width: 50px;
-}
-
-.social-btn:hover {
-    background: #f8fafc;
-    transform: translateY(-2px);
-}
-
-.social-btn img {
-    width: 20px;
-    height: 20px;
-    object-fit: contain;
-}
 
 /* ==========================================================================
    6. Feedback & Notifications

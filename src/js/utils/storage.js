@@ -4,7 +4,17 @@
  */
 window.StorageManager = {
     KEYS: {
-        INVENTORY: 'chaosInventory'
+        INVENTORY: 'chaosInventory',
+        REQUESTS: 'librarianRequests'
+    },
+
+    saveRequests(requests) {
+        localStorage.setItem(this.KEYS.REQUESTS, JSON.stringify(requests));
+    },
+
+    loadRequests() {
+        const saved = localStorage.getItem(this.KEYS.REQUESTS);
+        return saved ? JSON.parse(saved) : {};
     },
 
     /**

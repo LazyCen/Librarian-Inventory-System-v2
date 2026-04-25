@@ -36,24 +36,19 @@
 
         <nav class="sidebar-nav">
           <button class="nav-btn active" data-section="overview" onclick="switchSection('overview')">
-            <i class="fas fa-chart-pie"></i>
             <span>Overview</span>
           </button>
           <button class="nav-btn" data-section="requests" onclick="switchSection('requests')">
-            <i class="fas fa-inbox"></i>
             <span>All Requests</span>
             <span class="nav-badge" id="navRequestsBadge">0</span>
           </button>
           <button class="nav-btn" data-section="users" onclick="switchSection('users')">
-            <i class="fas fa-users"></i>
             <span>Users</span>
           </button>
           <button class="nav-btn" data-section="books" onclick="switchSection('books')">
-            <i class="fas fa-book-open"></i>
             <span>Books</span>
           </button>
           <button class="nav-btn" data-section="activity" onclick="switchSection('activity')">
-            <i class="fas fa-clock-rotate-left"></i>
             <span>Activity Log</span>
           </button>
         </nav>
@@ -75,7 +70,7 @@
         <!-- Top Bar -->
         <header class="admin-topbar">
           <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileSidebar()">
-            <i class="fas fa-bars"></i>
+            ☰
           </button>
           <div class="topbar-title">
             <h2 id="topbarTitle">Overview</h2>
@@ -86,7 +81,7 @@
               <span>Live</span>
             </div>
             <button class="btn-refresh" onclick="refreshAll()" title="Refresh data">
-              <i class="fas fa-rotate-right"></i>
+              ↻
             </button>
           </div>
         </header>
@@ -97,7 +92,7 @@
           <!-- Stats Grid -->
           <div class="stats-grid">
             <div class="stat-card stat-blue">
-              <div class="stat-icon"><i class="fas fa-book-open"></i></div>
+
               <div class="stat-body">
                 <div class="stat-num" id="statTotalBooks">0</div>
                 <div class="stat-label">Total Books</div>
@@ -105,7 +100,7 @@
               <div class="stat-glow"></div>
             </div>
             <div class="stat-card stat-amber">
-              <div class="stat-icon"><i class="fas fa-hand-holding-hand"></i></div>
+
               <div class="stat-body">
                 <div class="stat-num" id="statBorrowed">0</div>
                 <div class="stat-label">Borrowed</div>
@@ -113,7 +108,7 @@
               <div class="stat-glow"></div>
             </div>
             <div class="stat-card stat-green">
-              <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+
               <div class="stat-body">
                 <div class="stat-num" id="statReturned">0</div>
                 <div class="stat-label">Returned</div>
@@ -121,7 +116,7 @@
               <div class="stat-glow"></div>
             </div>
             <div class="stat-card stat-purple">
-              <div class="stat-icon"><i class="fas fa-users"></i></div>
+
               <div class="stat-body">
                 <div class="stat-num" id="statUsers">0</div>
                 <div class="stat-label">Registered Users</div>
@@ -129,7 +124,7 @@
               <div class="stat-glow"></div>
             </div>
             <div class="stat-card stat-rose">
-              <div class="stat-icon"><i class="fas fa-inbox"></i></div>
+
               <div class="stat-body">
                 <div class="stat-num" id="statPendingRequests">0</div>
                 <div class="stat-label">Active Borrows</div>
@@ -137,7 +132,7 @@
               <div class="stat-glow"></div>
             </div>
             <div class="stat-card stat-cyan">
-              <div class="stat-icon"><i class="fas fa-tags"></i></div>
+
               <div class="stat-body">
                 <div class="stat-num" id="statCategories">0</div>
                 <div class="stat-label">Categories</div>
@@ -199,7 +194,6 @@
               <button class="filter-tab" data-filter="Books" onclick="filterRequests('Books', this)">In Library</button>
             </div>
             <div class="toolbar-search">
-              <i class="fas fa-search"></i>
               <input type="text" id="requestSearch" placeholder="Search book or borrower…" oninput="renderRequests()" />
             </div>
           </div>
@@ -221,7 +215,6 @@
               <tbody id="requestsTbody"></tbody>
             </table>
             <div id="requestsEmpty" class="table-empty hidden">
-              <i class="fas fa-inbox"></i>
               <p>No requests found.</p>
             </div>
           </div>
@@ -238,7 +231,6 @@
               <button class="filter-tab" data-filter="Student" onclick="filterUsers('Student', this)">Students</button>
             </div>
             <div class="toolbar-search">
-              <i class="fas fa-search"></i>
               <input type="text" id="userSearch" placeholder="Search by name or email…" oninput="renderUsers()" />
             </div>
           </div>
@@ -258,7 +250,6 @@
               <tbody id="usersTbody"></tbody>
             </table>
             <div id="usersEmpty" class="table-empty hidden">
-              <i class="fas fa-user-slash"></i>
               <p>No users found.</p>
             </div>
           </div>
@@ -277,7 +268,6 @@
               <button class="filter-tab" data-filter="Added" onclick="filterBooks('Added', this)">Registered</button>
             </div>
             <div class="toolbar-search">
-              <i class="fas fa-search"></i>
               <input type="text" id="bookSearch" placeholder="Search title, author…" oninput="renderBooks()" />
             </div>
           </div>
@@ -299,7 +289,6 @@
               <tbody id="booksTbody"></tbody>
             </table>
             <div id="booksEmpty" class="table-empty hidden">
-              <i class="fas fa-book-open"></i>
               <p>No books found.</p>
             </div>
           </div>
@@ -312,7 +301,6 @@
             <!-- Populated by JS -->
           </div>
           <div id="activityEmpty" class="table-empty hidden">
-            <i class="fas fa-clock-rotate-left"></i>
             <p>No activity recorded yet.</p>
           </div>
         </section>
@@ -328,7 +316,6 @@
     <div id="adminConfirm" class="admin-modal-overlay hidden">
       <div class="admin-modal-card animate-fade-in">
         <div class="modal-icon-wrap danger">
-          <i class="fas fa-triangle-exclamation"></i>
         </div>
         <h3 id="confirmTitle">Are you sure?</h3>
         <p id="confirmMsg">This action cannot be undone.</p>
@@ -343,8 +330,8 @@
     <div id="userDetailModal" class="admin-modal-overlay hidden">
       <div class="admin-modal-card wide animate-fade-in">
         <div class="modal-header-row">
-          <h3><i class="fas fa-user-circle"></i> User Details</h3>
-          <button class="modal-close" onclick="closeModal('userDetailModal')"><i class="fas fa-times"></i></button>
+          <h3>User Details</h3>
+          <button class="modal-close" onclick="closeModal('userDetailModal')">✕</button>
         </div>
         <div id="userDetailBody"></div>
         <div class="modal-actions">
@@ -357,8 +344,8 @@
     <div id="bookDetailModal" class="admin-modal-overlay hidden">
       <div class="admin-modal-card wide animate-fade-in">
         <div class="modal-header-row">
-          <h3><i class="fas fa-book-open"></i> Book Details</h3>
-          <button class="modal-close" onclick="closeModal('bookDetailModal')"><i class="fas fa-times"></i></button>
+          <h3>Book Details</h3>
+          <button class="modal-close" onclick="closeModal('bookDetailModal')">✕</button>
         </div>
         <div id="bookDetailBody"></div>
         <div class="modal-actions">

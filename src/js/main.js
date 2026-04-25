@@ -14,6 +14,13 @@ let activeBinFilter = '';
 let sortMode = 'newest';
 let editingItemName = null;
 let pendingConfirmAction = null;
+let requests = {}; // Stores book access requests
+
+// Advanced filters
+let activeSubjectFilter = '';
+let activeYearFilter = '';
+let activeAvailabilityFilter = '';
+let activeFacultyRecFilter = '';
 
 /**
  * Initialize the application when DOM is fully loaded
@@ -23,23 +30,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Load saved data from browser's local storage
     inventory = StorageManager.loadInventory();
+    requests = StorageManager.loadRequests();
 
     // Render the initial view
     renderListView();
-    renderBinStatus();
+    if (typeof renderBinStatus === 'function') renderBinStatus();
     renderTagList();
     switchView('dashboard');
     updateFilterButtonLabel();
+    populateFilterOptions();
+    updateRequestBadge();
 
     // Set up form submission handler for adding items
     const addItemForm = document.getElementById('addItemForm');
     if (addItemForm) {
-        addItemForm.addEventListener('submit', handleAddItem);
+        addItemForm.addEventListener('submit', (e) => {
+            if (typeof handleAddItem === 'function') handleAddItem(e);
+        });
     }
 
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape' && !document.getElementById('addItemModal')?.classList.contains('hidden')) {
-            closeAddItemModal();
+            if (typeof closeAddItemModal === 'function') closeAddItemModal();
             return;
         }
         if (event.key === 'Escape' && !document.getElementById('confirmModal')?.classList.contains('hidden')) {
@@ -207,13 +219,12 @@ function switchView(view) {
     }
 
     if (view === 'list') renderListView(getFilteredEntries(), currentQuery);
-    if (view === 'bins') renderBinStatus();
+    if (view === 'bins' && typeof renderBinStatus === 'function') renderBinStatus();
     if (view === 'dashboard') renderDashboardView();
+    if (view === 'requests') renderRequestsView();
     
     // Auto-close mobile sidebar after switching
     toggleMobileSidebar(false);
-
-
 
     // Refresh users panel status
     if (typeof renderUsersPanel === 'function') renderUsersPanel();
@@ -294,18 +305,14 @@ function renderDonutChart(data, total) {
         '#3b82f6', '#22c55e', '#ef4444', '#f97316', 
         '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16',
         '#f59e0b', '#10b981', '#6366f1', '#a855f7'
-    ]; // Expanded palette: Blue, Green, Red, Orange, Purple, Pink, Cyan, Lime, Amber, Emerald, Indigo, Violet
+    ]; 
     const radius = 80;
     const circumference = 2 * Math.PI * radius;
     let currentOffset = 0;
 
-
-
     data.forEach(([label, count], i) => {
-        const percent = total > 0 ? ((count / total) * 100).toFixed(0) : 0;
         const dashArray = (count / total) * circumference;
 
-        // SVG Segment
         const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circle.setAttribute("class", "donut-segment");
         circle.setAttribute("data-label", label);
@@ -315,17 +322,15 @@ function renderDonutChart(data, total) {
         circle.setAttribute("r", radius.toString());
         circle.setAttribute("stroke", colors[i % colors.length]);
         circle.setAttribute("stroke-dasharray", `${dashArray} ${circumference - dashArray}`);
-        circle.setAttribute("stroke-dashoffset", circumference.toString()); // Start from full circumference for animation
+        circle.setAttribute("stroke-dashoffset", circumference.toString()); 
         circle.style.setProperty('--dash-offset', (-currentOffset).toString());
         circle.onmouseenter = () => highlightCategory(label, true);
         circle.onmouseleave = () => highlightCategory(label, false);
         circle.onclick = () => filterByTag(label);
         svg.appendChild(circle);
 
-        // Track original currentOffset for use inside GSAP
         const targetOffset = -currentOffset;
         
-        // Use GSAP to animate stroke-dashoffset
         if (typeof gsap !== 'undefined') {
             gsap.to(circle, {
                 strokeDashoffset: targetOffset,
@@ -334,7 +339,6 @@ function renderDonutChart(data, total) {
                 delay: i * 0.1
             });
         } else {
-            // Fallback
             setTimeout(() => {
                 circle.setAttribute("stroke-dashoffset", targetOffset.toString());
             }, 50 * i);
@@ -342,7 +346,6 @@ function renderDonutChart(data, total) {
 
         currentOffset += dashArray;
 
-        // List Item
         const color = colors[i % colors.length];
         list.innerHTML += `
             <div class="category-item clickable" 
@@ -362,10 +365,9 @@ function renderDonutChart(data, total) {
             </div>
         `;
 
-        // Update Center text and icon to top status
         if (i === 0) {
             const iconEl = document.getElementById('donutCenterIcon');
-            if (iconEl) iconEl.innerHTML = '<i class="fas fa-tag" style="color: var(--primary);"></i>';
+            if (iconEl) iconEl.innerHTML = '';
 
             document.getElementById('donutCenterText').textContent = label;
             document.getElementById('donutCenterSub').textContent = `${count.toLocaleString()} Total Books`;
@@ -373,35 +375,21 @@ function renderDonutChart(data, total) {
     });
 }
 
-/**
- * Highlights a category in both the donut chart and the legend
- * @param {string} label - The category label to highlight
- * @param {boolean} active - Whether to turn highlight on or off
- */
 function highlightCategory(label, active) {
     const segments = document.querySelectorAll(`.donut-segment[data-label="${label}"]`);
     const listItems = document.querySelectorAll(`.category-item[data-label="${label}"]`);
 
     segments.forEach(el => {
-        if (active) {
-            el.classList.add('highlighted');
-        } else {
-            el.classList.remove('highlighted');
-        }
+        if (active) el.classList.add('highlighted');
+        else el.classList.remove('highlighted');
     });
 
     listItems.forEach(el => {
-        if (active) {
-            el.classList.add('highlighted');
-        } else {
-            el.classList.remove('highlighted');
-        }
+        if (active) el.classList.add('highlighted');
+        else el.classList.remove('highlighted');
     });
 }
 
-/**
- * Render a simplified list of borrowed books for the dashboard
- */
 function renderDashboardBorrowedList() {
     const container = document.getElementById('dashBorrowedList');
     if (!container) return;
@@ -411,12 +399,14 @@ function renderDashboardBorrowedList() {
     if (borrowedItems.length === 0) {
         container.innerHTML = `
             <div style="text-align: center; padding: 40px; color: var(--text-muted); border: 2px dashed #f1f5f9; border-radius: 12px;">
-                <i class="fas fa-check-circle" style="font-size: 2rem; color: #22c55e; margin-bottom: 12px; opacity: 0.5;"></i>
                 <p>No books currently borrowed. Everything is in stock!</p>
             </div>
         `;
         return;
     }
+
+    const currentRole = localStorage.getItem('lisCurrentRole');
+    const isStudent = currentRole === 'Student';
 
     container.innerHTML = `
         <div class="dash-borrowed-grid">
@@ -430,12 +420,13 @@ function renderDashboardBorrowedList() {
                         <div class="dash-borrowed-info">
                             <div class="dash-borrowed-name">${name}</div>
                             <div class="dash-borrowed-meta">
-                                <i class="fas fa-user-tag"></i> ${details.borrower || 'Unknown'}
+                                ${details.borrower || 'Unknown'}
                             </div>
                         </div>
+                        ${!isStudent ? `
                         <button class="btn-manage" onclick="openEditItemModal('${name.replace(/'/g, "\\'")}')">
                             Manage
-                        </button>
+                        </button>` : ''}
                     </div>
                 `;
     }).join('')}
@@ -443,9 +434,6 @@ function renderDashboardBorrowedList() {
     `;
 }
 
-/**
- * Render a simplified list of returned books for the dashboard
- */
 function renderDashboardReturnedList() {
     const container = document.getElementById('dashReturnedList');
     if (!container) return;
@@ -455,12 +443,14 @@ function renderDashboardReturnedList() {
     if (returnedItems.length === 0) {
         container.innerHTML = `
             <div style="text-align: center; padding: 40px; color: var(--text-muted); border: 2px dashed #f1f5f9; border-radius: 12px;">
-                <i class="fas fa-info-circle" style="font-size: 2rem; color: var(--primary); margin-bottom: 12px; opacity: 0.5;"></i>
                 <p>No books recently returned yet.</p>
             </div>
         `;
         return;
     }
+
+    const currentRole = localStorage.getItem('lisCurrentRole');
+    const isStudent = currentRole === 'Student';
 
     container.innerHTML = `
         <div class="dash-returned-grid">
@@ -474,90 +464,18 @@ function renderDashboardReturnedList() {
                         <div class="dash-returned-info">
                             <div class="dash-returned-name">${name}</div>
                             <div class="dash-returned-meta">
-                                <i class="fas fa-user-check"></i> ${details.returner || 'Unknown'}
+                                ${details.returner || 'Unknown'}
                             </div>
                         </div>
+                        ${!isStudent ? `
                         <button class="btn-manage" onclick="openEditItemModal('${name.replace(/'/g, "\\'")}')">
                             Manage
-                        </button>
+                        </button>` : ''}
                     </div>
                 `;
             }).join('')}
         </div>
     `;
-}
-
-
-
-/**
- * Toggles the borrower name field based on whether the borrowed checkbox is checked
- */
-function toggleBorrowerField() {
-    const select = document.getElementById('itemBinSelection');
-    const isBorrowed = select && select.value === 'Borrowed';
-    const isReturned = select && select.value === 'Returned';
-
-    const borrowerGroup = document.getElementById('borrowerFieldGroup');
-    const borrowerInput = document.getElementById('itemBorrower');
-    if (borrowerGroup) {
-        if (isBorrowed) {
-            borrowerGroup.classList.remove('hidden');
-        } else {
-            borrowerGroup.classList.add('hidden');
-            if (borrowerInput) borrowerInput.value = ''; // Clear if unchecking
-        }
-    }
-
-    const returnerGroup = document.getElementById('returnerFieldGroup');
-    const returnerInput = document.getElementById('itemReturner');
-    if (returnerGroup) {
-        if (isReturned) {
-            returnerGroup.classList.remove('hidden');
-        } else {
-            returnerGroup.classList.add('hidden');
-            if (returnerInput) returnerInput.value = ''; // Clear if unchecking
-        }
-    }
-}
-
-function setItemFormMode(mode = 'add', itemName = '', currentBin = '') {
-    const modalTitle = document.getElementById('itemModalTitle');
-    const submitBtn = document.getElementById('itemSubmitBtn');
-
-    const isEditMode = mode === 'edit';
-    editingItemName = isEditMode ? itemName : null;
-
-    if (modalTitle) {
-        modalTitle.textContent = isEditMode ? 'Update Book' : 'Register New Book';
-    }
-
-    if (submitBtn) {
-        submitBtn.innerHTML = isEditMode
-            ? '<i class="fas fa-pen"></i> Save Changes'
-            : 'Add to Catalog';
-    }
-
-    // dynamically set options
-    const binSelect = document.getElementById('itemBinSelection');
-    if (binSelect) {
-        if (!isEditMode) {
-            binSelect.innerHTML = '<option value="Added">Register</option>';
-            binSelect.value = 'Added';
-            toggleBorrowerField();
-        } else {
-            const options = {
-                'Books': '<option value="Books">In Library</option><option value="Borrowed">Borrow Book</option><option value="Returned">Returned</option>',
-                'Added': '<option value="Added">Added</option><option value="Books">Register Book</option>',
-                'Borrowed': '<option value="Borrowed">Currently Borrowed</option><option value="Returned">Returned</option>',
-                'Returned': '<option value="Returned">Returned</option><option value="Books">Back to Library</option>'
-            };
-            binSelect.innerHTML = options[currentBin] || `
-                <option value="Books">Books</option>
-                <option value="Borrowed">Borrowed</option>
-                <option value="Returned">Returned</option>
-            `;
-        }
-    }
 }
 
 function showMessage(message, type = 'info', duration = 3000, position = 'top') {
@@ -607,113 +525,6 @@ function confirmModalAccept() {
     }
 }
 
-function handleAddItem(e) {
-    e.preventDefault();
-
-    const itemName = document.getElementById('itemName').value.trim();
-    const itemAuthor = document.getElementById('itemAuthor').value.trim();
-    const itemTags = document.getElementById('itemTags').value.trim();
-    const binSelect = document.getElementById('itemBinSelection');
-    const selectedBin = binSelect ? binSelect.value : 'Added';
-    const isBorrowed = selectedBin === 'Borrowed';
-    const itemBorrower = document.getElementById('itemBorrower').value.trim();
-    const itemReturnerInput = document.getElementById('itemReturner');
-    const itemReturner = itemReturnerInput ? itemReturnerInput.value.trim() : '';
-
-    if (!itemName) {
-        showMessage('Please enter a book title', 'error');
-        return;
-    }
-
-    if (!editingItemName && inventory[itemName]) {
-        showMessage('Title already exists in catalog', 'error');
-        return;
-    }
-
-    const parsedTags = itemTags
-        .split(',')
-        .map(tag => {
-            const t = tag.trim().toLowerCase();
-            // Title Case: capitalize first letter of each word and after hyphens
-            return t.split(/([- ])/).map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('');
-        })
-        .filter(tag => tag.length > 0);
-
-    if (editingItemName) {
-        if (itemName !== editingItemName && inventory[itemName]) {
-            showMessage('Another title already uses that name', 'error');
-            return;
-        }
-
-        const existingData = inventory[editingItemName];
-        if (!existingData) {
-            showMessage('Original title not found', 'error');
-            setItemFormMode('add');
-            return;
-        }
-
-        // Validation: Can't return if not borrowed
-        const currentBin = InventoryHelpers.getEffectiveBin(existingData);
-        if (selectedBin === 'Returned' && currentBin !== 'Borrowed' && currentBin !== 'Returned') {
-            showMessage("You can't returned the book, it is not borrowed", 'error');
-            return;
-        }
-
-        // Validation: Can't borrow if already borrowed
-        if (selectedBin === 'Borrowed' && currentBin === 'Borrowed') {
-            showMessage("sorry, this book is already borrowed", 'error');
-            return;
-        }
-
-        delete inventory[editingItemName];
-        inventory[itemName] = {
-            ...existingData,
-            author: itemAuthor,
-            bin: selectedBin,
-            tags: parsedTags,
-            isBorrowed: isBorrowed,
-            borrower: isBorrowed ? itemBorrower : '',
-            returner: selectedBin === 'Returned' ? itemReturner : ''
-        };
-        let successMsg = 'You successfully updated the book';
-        if (selectedBin === 'Borrowed') successMsg = 'Successfully Borrowed the book';
-        if (selectedBin === 'Returned') successMsg = 'Successfully Returned the book';
-
-        showMessage(successMsg, 'success', 3000);
-    } else {
-        const assignedBin = selectedBin;
-        const newId = InventoryHelpers.generateUniqueId(inventory);
-        inventory[itemName] = {
-            id: newId,
-            author: itemAuthor,
-            bin: assignedBin,
-            tags: parsedTags,
-            isBorrowed: isBorrowed,
-            borrower: isBorrowed ? itemBorrower : '',
-            returner: selectedBin === 'Returned' ? itemReturner : '',
-            dateAdded: new Date().toISOString()
-        };
-        showMessage(`Catalog updated: '${itemName}' (#${newId}) marked as ${assignedBin}`, 'success');
-    }
-
-    StorageManager.saveInventory(inventory);
-    setItemFormMode('add');
-
-    // Clear and close
-    document.getElementById('addItemForm').reset();
-    if (typeof closeAddItemModal === 'function') closeAddItemModal();
-
-    // Refresh
-    renderListView();
-    renderBinStatus();
-    renderTagList();
-    renderDashboardView();
-    updateFilterButtonLabel();
-}
-
-/**
- * Handle search functionality
- */
 function handleSearch() {
     const query = document.getElementById('searchQuery').value.trim().toLowerCase();
     currentQuery = query;
@@ -725,10 +536,6 @@ function handleSearch() {
     renderListView(results, query);
 }
 
-/**
- * Render the complete list of all inventory items
- * Updated to match RegTech card design
- */
 function renderListView(itemsToRender = null, query = "", targetContainerId = 'inventoryList', targetCountId = 'itemCount') {
     const container = document.getElementById(targetContainerId);
     const countElement = document.getElementById(targetCountId);
@@ -764,6 +571,10 @@ function renderListView(itemsToRender = null, query = "", targetContainerId = 'i
             actionHtml = `<div class="card-meta" style="color: var(--text-main); font-weight: 600;"><i class="fas fa-undo" style="color: #22c55e;"></i> Returned by: ${details.returner}</div>`;
         }
 
+        const facultyRecHtml = details.facultyRec 
+            ? `<div class="faculty-rec-badge"><i class="fas fa-thumbs-up"></i> Faculty Recommended</div>` 
+            : '';
+
         let statusBadge = '';
         let cardClass = '';
         if (details.isBorrowed) {
@@ -775,19 +586,53 @@ function renderListView(itemsToRender = null, query = "", targetContainerId = 'i
         }
 
         const bookId = details.id || 'N/A';
+        const currentRole = localStorage.getItem('lisCurrentRole');
+        const isStudent = currentRole === 'Student';
+        const isRestricted = details.isRestricted || false;
+        
+        const currentUser = localStorage.getItem('lisCurrentUser') || localStorage.getItem('lisCurrentRole') || 'Anonymous Student';
+        
+        const hasPendingRequest = Object.values(requests).some(r => r.bookTitle === name && r.studentId === currentUser && r.status === 'Pending');
+        const isApproved = Object.values(requests).some(r => r.bookTitle === name && r.studentId === currentUser && r.status === 'Approved');
+
+        let restrictedActionHtml = '';
+        if (isStudent) {
+            if (isApproved) {
+                restrictedActionHtml = `<div class="status-badge status-approved">
+                    <i class="fas fa-unlock"></i> Access Granted
+                </div>`;
+            } else if (hasPendingRequest) {
+                restrictedActionHtml = `<div class="status-badge status-pending">
+                    <i class="fas fa-hourglass-half"></i> Request Pending
+                </div>`;
+            } else {
+                restrictedActionHtml = `<button class="btn-request" onclick="submitAccessRequest('${safeName}')">
+                    <i class="fas fa-paper-plane"></i> Request Access
+                </button>`;
+            }
+        }
+
+        const showManagement = !isStudent;
 
         return `
             <div class="item-card ${cardClass}">
+                ${showManagement ? `
                 <div class="card-options" onclick="openEditItemModal('${safeName}')">
                     <i class="fas fa-pen"></i>
-                </div>
+                </div>` : ''}
                 <div class="card-icon">#${bookId}</div>
-                <div class="card-updates">Catalog record ${statusBadge}</div>
+                <div class="card-updates">
+                  Catalog record ${statusBadge}
+                  ${isRestricted ? '<span class="status-badge" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2);">Restricted</span>' : ''}
+                  ${facultyRecHtml}
+                </div>
                 <h4 class="card-title">${name}</h4>
                 ${authorHtml}
                 <div class="card-body-row">
                     <div class="card-main-meta">
                         <div class="card-meta"><i class="far fa-calendar"></i> Added ${date}</div>
+                        ${details.year ? `<div class="card-meta"><i class="far fa-calendar-check"></i> Published: ${details.year}</div>` : ''}
+                        ${details.department ? `<div class="card-meta"><i class="fas fa-building-columns"></i> Dept: ${details.department}</div>` : ''}
                         <div class="card-meta"><i class="fas fa-box"></i> Bin/Status: ${details.bin}</div>
                         <div class="card-meta"><i class="fas fa-tags"></i> ${categoryCount} categories</div>
                         ${actionHtml}
@@ -796,19 +641,23 @@ function renderListView(itemsToRender = null, query = "", targetContainerId = 'i
                         ${tagBadges}
                     </div>
                 </div>
-                <div style="display: flex; gap: 8px; margin-top: auto; padding-top: 14px; border-top: 1px solid var(--border-color);">
-                    <button class="btn-secondary" style="padding: 8px 10px; font-size: 0.8rem;" onclick="openEditItemModal('${safeName}')">
+                ${isStudent ? `
+                <div class="card-footer">
+                    ${restrictedActionHtml}
+                </div>` : ''}
+                ${showManagement ? `
+                <div class="card-footer" style="display: flex; gap: 8px;">
+                    <button class="btn-secondary" style="padding: 8px 10px; font-size: 0.8rem; flex: 1; justify-content: center;" onclick="openEditItemModal('${safeName}')">
                         <i class="fas fa-pen"></i> Update
                     </button>
-                    <button class="btn-secondary btn-delete" style="padding: 8px 10px; font-size: 0.8rem;" onclick="deleteItem('${safeName}')">
+                    <button class="btn-secondary btn-delete" style="padding: 8px 10px; font-size: 0.8rem; flex: 1; justify-content: center;" onclick="deleteItem('${safeName}')">
                         <i class="fas fa-trash"></i> Delete
                     </button>
-                </div>
+                </div>` : ''}
             </div>
         `;
     }).join('');
 
-    // GSAP Stagger Animation for the rendered items
     if (typeof gsap !== 'undefined') {
         const cards = container.querySelectorAll('.item-card');
         gsap.from(cards, {
@@ -817,14 +666,11 @@ function renderListView(itemsToRender = null, query = "", targetContainerId = 'i
             opacity: 0,
             stagger: 0.08,
             ease: "back.out(1.2)",
-            clearProps: "all" // remove inline styles after animation so hover works optimally
+            clearProps: "all"
         });
     }
 }
 
-/**
- * Render the tags list in the right sidebar
- */
 function renderTagList() {
     const container = document.getElementById('tagList');
     const totalUpdatesElement = document.getElementById('totalUpdates');
@@ -866,87 +712,6 @@ function filterByTag(tag) {
     renderTagList();
 }
 
-function deleteItem(itemName) {
-    openConfirmModal(`Remove "${itemName}" from the catalog?`, () => {
-        delete inventory[itemName];
-        StorageManager.saveInventory(inventory);
-        renderListView();
-        renderBinStatus();
-        renderTagList();
-        renderDashboardView();
-        showMessage('You Successfully Remove the Book', 'info', 1800);
-    });
-}
-
-function openEditItemModal(itemName) {
-    const itemData = inventory[itemName];
-    if (!itemData) {
-        showMessage('Book not found', 'error');
-        return;
-    }
-
-    const itemNameInput = document.getElementById('itemName');
-    const itemAuthorInput = document.getElementById('itemAuthor');
-    const itemTagsInput = document.getElementById('itemTags');
-    const itemBorrowerInput = document.getElementById('itemBorrower');
-    const itemReturnerInput = document.getElementById('itemReturner');
-    const binSelect = document.getElementById('itemBinSelection');
-    if (!itemNameInput || !itemTagsInput) return;
-
-    const currentBin = InventoryHelpers.getEffectiveBin(itemData);
-    setItemFormMode('edit', itemName, currentBin);
-    itemNameInput.value = itemName;
-    if (itemAuthorInput) itemAuthorInput.value = itemData.author || '';
-    itemTagsInput.value = itemData.tags.join(', ');
-    if (binSelect) {
-        binSelect.value = currentBin;
-    }
-    if (itemBorrowerInput) itemBorrowerInput.value = itemData.borrower || '';
-    if (itemReturnerInput) itemReturnerInput.value = itemData.returner || '';
-
-    // Toggle borrower/returner field visibility
-    toggleBorrowerField();
-
-    document.getElementById('addItemModal').classList.remove('hidden');
-}
-
-function renderBinStatus() {
-    const container = document.getElementById('binStatus');
-    if (!container) return;
-
-    container.innerHTML = bins.map((bin) => {
-        const isBooksBin = bin === 'Books';
-        const itemCount = isBooksBin 
-            ? Object.values(inventory).filter(item => InventoryHelpers.getEffectiveBin(item) !== 'Added').length 
-            : Object.values(inventory).filter(item => InventoryHelpers.getEffectiveBin(item) === bin).length;
-
-        let iconStr = '<i class="fas fa-box"></i>';
-        if (bin === 'Added') iconStr = '<i class="fas fa-plus-circle"></i>';
-        if (bin === 'Borrowed') iconStr = '<i class="fas fa-hand-holding-hand"></i>';
-        if (bin === 'Returned') iconStr = '<i class="fas fa-undo"></i>';
-        if (bin === 'Books') iconStr = '<i class="fas fa-book-open"></i>';
-
-        const titleText = isBooksBin ? 'Books' : `${bin} Books`;
-
-        return `
-            <div class="bin-card" onclick="filterByBin('${bin}')">
-                <div class="bin-card-header">
-                    <div class="bin-card-icon" style="background: none; color: inherit; font-size: 1.5rem;">
-                        ${iconStr}
-                    </div>
-                </div>
-                <h4 class="card-title">${titleText}</h4>
-                <div class="card-meta">
-                    <i class="fas fa-book"></i> ${itemCount} Titles
-                </div>
-                <div class="card-details">
-                    View titles <i class="fas fa-arrow-right"></i>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
 function getFilteredEntries() {
     let entries = Object.entries(inventory);
     if (currentQuery) {
@@ -955,7 +720,10 @@ function getFilteredEntries() {
             (details.tags && details.tags.some(tag => tag.includes(currentQuery))) ||
             (details.id && details.id.toString().includes(currentQuery)) ||
             (details.author && details.author.toLowerCase().includes(currentQuery)) ||
-            (details.borrower && details.borrower.toLowerCase().includes(currentQuery))
+            (details.borrower && details.borrower.toLowerCase().includes(currentQuery)) ||
+            (details.isbn && details.isbn.toLowerCase().includes(currentQuery)) ||
+            (details.department && details.department.toLowerCase().includes(currentQuery)) ||
+            (details.keywords && details.keywords.toLowerCase().includes(currentQuery))
         );
     }
     if (activeTagFilter) {
@@ -963,35 +731,72 @@ function getFilteredEntries() {
     }
     if (activeBinFilter) {
         if (activeBinFilter === 'Books') {
-            // "Books" bin shows everything that has been registered/processed (not "Added" status)
             entries = entries.filter(([, details]) => InventoryHelpers.getEffectiveBin(details) !== 'Added');
         } else {
             entries = entries.filter(([, details]) => InventoryHelpers.getEffectiveBin(details) === activeBinFilter);
         }
     } else {
-        // Default "Books" view (no active filter) also excludes "Added" items
         entries = entries.filter(([, details]) => InventoryHelpers.getEffectiveBin(details) !== 'Added');
     }
-    entries = sortEntries(entries);
-    return entries;
+
+    if (activeSubjectFilter) entries = entries.filter(([, details]) => details.subject === activeSubjectFilter);
+    if (activeYearFilter) entries = entries.filter(([, details]) => details.year === activeYearFilter);
+    if (activeAvailabilityFilter) {
+        if (activeAvailabilityFilter === 'available') entries = entries.filter(([, details]) => !details.isBorrowed);
+        else if (activeAvailabilityFilter === 'borrowed') entries = entries.filter(([, details]) => details.isBorrowed);
+    }
+    if (activeFacultyRecFilter === 'yes') entries = entries.filter(([, details]) => details.facultyRec);
+
+    return sortEntries(entries);
+}
+
+function handleAdvancedFilter() {
+    activeSubjectFilter = document.getElementById('filterSubject')?.value || '';
+    activeYearFilter = document.getElementById('filterYear')?.value || '';
+    activeAvailabilityFilter = document.getElementById('filterAvailability')?.value || '';
+    activeFacultyRecFilter = document.getElementById('filterFacultyRec')?.value || '';
+    renderListView(getFilteredEntries(), currentQuery);
+}
+
+function resetAdvancedFilters() {
+    activeSubjectFilter = ''; activeYearFilter = ''; activeAvailabilityFilter = ''; activeFacultyRecFilter = '';
+    if (document.getElementById('filterSubject')) document.getElementById('filterSubject').value = '';
+    if (document.getElementById('filterYear')) document.getElementById('filterYear').value = '';
+    if (document.getElementById('filterAvailability')) document.getElementById('filterAvailability').value = '';
+    if (document.getElementById('filterFacultyRec')) document.getElementById('filterFacultyRec').value = '';
+    renderListView(getFilteredEntries(), currentQuery);
+}
+
+function populateFilterOptions() {
+    const subjectSelect = document.getElementById('filterSubject');
+    const yearSelect = document.getElementById('filterYear');
+    if (!subjectSelect || !yearSelect) return;
+    const subjects = new Set(); const years = new Set();
+    Object.values(inventory).forEach(item => {
+        if (item.subject) subjects.add(item.subject);
+        if (item.year) years.add(item.year);
+    });
+    const currentSubject = subjectSelect.value;
+    subjectSelect.innerHTML = '<option value="">All Subjects</option>';
+    Array.from(subjects).sort().forEach(sub => { subjectSelect.innerHTML += `<option value="${sub}">${sub}</option>`; });
+    subjectSelect.value = currentSubject;
+    const currentYear = yearSelect.value;
+    yearSelect.innerHTML = '<option value="">All Years</option>';
+    Array.from(years).sort((a, b) => b - a).forEach(year => { yearSelect.innerHTML += `<option value="${year}">${year}</option>`; });
+    yearSelect.value = currentYear;
 }
 
 function sortEntries(entries) {
     const sorted = [...entries];
-    if (sortMode === 'name') {
-        sorted.sort((a, b) => a[0].localeCompare(b[0]));
-    } else if (sortMode === 'oldest') {
-        sorted.sort((a, b) => InventoryHelpers.getDateValue(a[1].dateAdded) - InventoryHelpers.getDateValue(b[1].dateAdded));
-    } else {
-        sorted.sort((a, b) => InventoryHelpers.getDateValue(b[1].dateAdded) - InventoryHelpers.getDateValue(a[1].dateAdded));
-    }
+    if (sortMode === 'name') sorted.sort((a, b) => a[0].localeCompare(b[0]));
+    else if (sortMode === 'oldest') sorted.sort((a, b) => InventoryHelpers.getDateValue(a[1].dateAdded) - InventoryHelpers.getDateValue(b[1].dateAdded));
+    else sorted.sort((a, b) => InventoryHelpers.getDateValue(b[1].dateAdded) - InventoryHelpers.getDateValue(a[1].dateAdded));
     return sorted;
 }
 
 function cycleSortMode() {
     const modes = ['newest', 'oldest', 'name'];
-    const currentIndex = modes.indexOf(sortMode);
-    sortMode = modes[(currentIndex + 1) % modes.length];
+    sortMode = modes[(modes.indexOf(sortMode) + 1) % modes.length];
     updateFilterButtonLabel();
     renderListView(getFilteredEntries(), currentQuery);
     showMessage(`Sorted by ${sortMode}`, 'info', 1500);
@@ -1000,62 +805,75 @@ function cycleSortMode() {
 function updateFilterButtonLabel() {
     const button = document.getElementById('filterBtn');
     if (!button) return;
-    const labels = {
-        newest: 'Sort: Newest',
-        oldest: 'Sort: Oldest',
-        name: 'Sort: Name'
-    };
+    const labels = { newest: 'Sort: Newest', oldest: 'Sort: Oldest', name: 'Sort: Name' };
     button.innerHTML = `<i class="fas fa-filter"></i> ${labels[sortMode]}`;
 }
 
 function resetFilters() {
-    currentQuery = '';
-    activeTagFilter = '';
-    activeBinFilter = '';
+    currentQuery = ''; activeTagFilter = ''; activeBinFilter = '';
     const queryInput = document.getElementById('searchQuery');
     if (queryInput) queryInput.value = '';
-    renderTagList();
-    renderListView(getFilteredEntries(), currentQuery);
+    renderTagList(); renderListView(getFilteredEntries(), currentQuery);
 }
 
-function showAllItems() {
-    resetFilters();
-    switchView('list');
-}
-
+function showAllItems() { resetFilters(); switchView('list'); }
 function focusTopTagFromDashboard() {
     const { tagCounts } = getInventoryStats();
     const topTag = Object.entries(tagCounts).sort((a, b) => b[1] - a[1])[0]?.[0];
-    if (!topTag) {
-        showMessage('No tags available yet', 'info');
-        return;
-    }
+    if (!topTag) { showMessage('No tags available yet', 'info'); return; }
     filterByTag(topTag);
 }
 
 function filterRecentItems() {
-    currentQuery = '';
-    activeTagFilter = '';
-    activeBinFilter = '';
+    currentQuery = ''; activeTagFilter = ''; activeBinFilter = '';
     const recentEntries = Object.entries(inventory).filter(([, details]) => InventoryHelpers.isRecentDate(details.dateAdded));
-    switchView('list');
-    renderListView(sortEntries(recentEntries), 'recent');
+    switchView('list'); renderListView(sortEntries(recentEntries), 'recent');
 }
 
 function filterByBin(bin) {
-    activeBinFilter = bin;
-    activeTagFilter = '';
-    currentQuery = '';
+    activeBinFilter = bin; activeTagFilter = ''; currentQuery = '';
     const queryInput = document.getElementById('searchQuery');
     if (queryInput) queryInput.value = '';
-    switchView('list');
-    renderListView(getFilteredEntries(), '');
+    switchView('list'); renderListView(getFilteredEntries(), '');
     showMessage(`Showing titles from ${bin}`, 'info', 1500);
 }
 
-// End of application logic
+function renderRequestsView() {
+    const container = document.getElementById('requestsList');
+    if (!container) return;
+    const currentRole = localStorage.getItem('lisCurrentRole');
+    const isStudent = currentRole === 'Student';
+    const currentUser = localStorage.getItem('lisCurrentUser') || localStorage.getItem('lisCurrentRole') || 'Anonymous Student';
+    const filter = document.getElementById('requestStatusFilter')?.value || 'all';
+    let entries = Object.values(requests);
+    if (isStudent) entries = entries.filter(r => r.studentId === currentUser);
+    if (filter !== 'all') entries = entries.filter(r => r.status === filter);
+    entries.sort((a, b) => new Date(b.dateRequested) - new Date(a.dateRequested));
+    if (entries.length === 0) {
+        container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 60px; background: rgba(255,255,255,0.03); border-radius: 20px; border: 2px dashed var(--border-color);"><i class="fas fa-paper-plane" style="font-size: 3rem; color: var(--text-muted); opacity: 0.2; margin-bottom: 20px;"></i><h3 style="color: var(--text-main);">No requests found</h3><p style="color: var(--text-muted);">Restricted books will appear here once you request access.</p></div>`;
+        return;
+    }
+    container.innerHTML = entries.map(req => {
+        const statusClass = req.status.toLowerCase();
+        const date = new Date(req.dateRequested).toLocaleDateString();
+        return `<div class="item-card animate-fade-in"><div class="card-updates"><span class="status-badge status-${statusClass}">${req.status}</span></div><h4 class="card-title">${req.bookTitle}</h4><div class="card-meta">Requested by: ${req.studentId}</div><div class="card-meta">${date}</div>${!isStudent && req.status === 'Pending' ? `<div style="display: flex; gap: 8px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border-color);"><button class="btn-secondary" style="background: #22c55e; color: white; border: none; flex: 1;" onclick="handleRequestUpdate('${req.id}', 'Approved')">Approve</button><button class="btn-secondary" style="background: #ef4444; color: white; border: none; flex: 1;" onclick="handleRequestUpdate('${req.id}', 'Rejected')">Reject</button></div>` : ''}</div>`;
+    }).join('');
+}
 
+function updateRequestBadge() {
+    const badge = document.getElementById('requestBadge');
+    const navItem = document.getElementById('navRequests');
+    if (!badge || !navItem) return;
+    const currentRole = localStorage.getItem('lisCurrentRole');
+    const isStudent = currentRole === 'Student';
+    const currentUser = localStorage.getItem('lisCurrentUser') || localStorage.getItem('lisCurrentRole') || 'Anonymous Student';
+    const label = isStudent ? 'Request' : 'Access Requests';
+    navItem.innerHTML = `<i class="fas fa-paper-plane"></i> ${label} <span id="requestBadge" class="nav-badge hidden">0</span>`;
+    const newBadge = document.getElementById('requestBadge');
+    let count = 0;
+    if (isStudent) count = Object.values(requests).filter(r => r.studentId === currentUser && r.status !== 'Pending').length;
+    else count = Object.values(requests).filter(r => r.status === 'Pending').length;
+    if (count > 0 && newBadge) { newBadge.textContent = count; newBadge.classList.remove('hidden'); }
+    else if (newBadge) newBadge.classList.add('hidden');
+}
 
-
-
-console.log('Main Logic Updated for New Dashboard');

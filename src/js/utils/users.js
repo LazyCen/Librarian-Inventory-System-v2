@@ -43,8 +43,12 @@ function saveOnlineSet(set) {
  */
 function setUserOnline(email) {
     if (!email) return;
-    const set = getOnlineSet();
+    
+    // On a local-storage based system, only one user can be truly 'online' per browser.
+    // We clear the set first to remove any 'ghost' sessions from previous users.
+    const set = new Set(); 
     set.add(email);
+    
     saveOnlineSet(set);
     localStorage.setItem(CURRENT_USER_KEY, email);
     renderUsersPanel();

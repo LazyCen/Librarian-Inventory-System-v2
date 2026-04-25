@@ -1,23 +1,43 @@
-/**
- * Handles the logout process.
- * Marks the current session user as offline, clears the role-based restrictions,
- * hides the dashboard, and restores the authentication section.
- */
 function handleLogout() {
-    // Mark the active user offline before leaving the dashboard
-    if (typeof getCurrentUserEmail === 'function' && typeof setUserOffline === 'function') {
-        const email = getCurrentUserEmail();
-        if (email) setUserOffline(email);
-    }
+    console.log('Logout initiated...');
+    
+    try {
+        // Clear session data
+        // Mark as offline in the global status tracker
+        const currentEmail = localStorage.getItem('lisCurrentUser');
+        if (currentEmail && typeof setUserOffline === 'function') {
+            setUserOffline(currentEmail);
+        }
 
-    // Clear the stored role and reset all UI restrictions
-    localStorage.removeItem('lisCurrentRole');
-    if (typeof applyRoleRestrictions === 'function') {
-        applyRoleRestrictions(null); // null → remove all restrictions
-    }
+        localStorage.removeItem('lisCurrentRole');
+        localStorage.removeItem('lisCurrentUser');
 
-    document.getElementById('main-app').classList.add('hidden');
-    document.getElementById('auth-section').style.display = 'flex';
-    const booksLayer = document.getElementById('booksLayer');
-    if (booksLayer) booksLayer.style.display = 'block';
+        // Reset UI to initial role selection state
+        const mainApp = document.getElementById('main-app');
+        const authSection = document.getElementById('auth-section');
+        const roleSelector = document.getElementById('roleSelector');
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+
+        if (mainApp) mainApp.classList.add('hidden');
+        if (authSection) authSection.style.display = 'flex';
+        
+        if (roleSelector) roleSelector.style.display = 'flex';
+        if (loginForm) loginForm.style.display = 'none';
+        if (signupForm) signupForm.style.display = 'none';
+
+        const booksLayer = document.getElementById('booksLayer');
+        if (booksLayer) booksLayer.style.display = 'block';
+
+        // Attempt to call role restriction reset if it exists
+        if (typeof applyRoleRestrictions === 'function') {
+            applyRoleRestrictions(null);
+        }
+
+        console.log('Logout successful');
+    } catch (err) {
+        console.error('Logout failed:', err);
+        // Emergency fallback: force reload
+        window.location.reload();
+    }
 }

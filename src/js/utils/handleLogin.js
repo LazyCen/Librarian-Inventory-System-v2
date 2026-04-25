@@ -116,13 +116,6 @@ function goBackToRoleSelection() {
     document.querySelectorAll('.role-picker-grid .role-picker-btn').forEach(btn => btn.classList.remove('selected'));
 }
 
-/**
- * Resets the signup form back to the role-picker step.
- * Called when the user clicks "Change role".
- */
-function resetRoleStep() {
-    // This is now handled by goBackToRoleSelection
-}
 
 /* ------------------------------------------------------------------ */
 /*  Role-based UI restrictions                                         */
@@ -154,6 +147,16 @@ function applyRoleRestrictions(role) {
             if (typeof switchView === 'function') switchView('dashboard');
         }
     }
+
+    const dashBinCard = document.getElementById('dashBinStatusCard');
+    if (dashBinCard) {
+        dashBinCard.style.display = isStudent ? 'none' : '';
+    }
+
+    // Update Requests sidebar label
+    if (typeof updateRequestBadge === 'function') {
+        updateRequestBadge();
+    }
 }
 
 /* ------------------------------------------------------------------ */
@@ -162,12 +165,9 @@ function applyRoleRestrictions(role) {
 
 function handleLogin(e) {
     if (e) e.preventDefault();
-
     const targetId = e?.target?.id;
-    const isSocialLogin = targetId === 'googleLogin' || targetId === 'facebookLogin';
 
-    // Safety check: Ensure a role is selected before proceeding with login/signup
-    if (!isSocialLogin && (targetId === 'loginForm' || targetId === 'signupForm')) {
+    if (targetId === 'loginForm' || targetId === 'signupForm') {
         if (!_pendingRole) {
             goBackToRoleSelection();
             setAuthNotice('Please select your role first.', 'error');
@@ -248,7 +248,6 @@ function handleLogin(e) {
         saveStoredUsers(users);
 
         // Reset the signup form state
-        resetRoleStep();
         setAuthNotice('Account created. You can now log in with this email.', 'success');
 
         if (emailInput) {
@@ -309,7 +308,7 @@ function handleLogin(e) {
         if (typeof setUserOnline === 'function') setUserOnline(matchedUser.email);
     }
 
-    if (!isSocialLogin && targetId !== 'loginForm') {
+    if (targetId !== 'loginForm') {
         setAuthNotice('Unsupported login action.', 'error');
         return;
     }

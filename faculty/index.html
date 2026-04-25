@@ -20,8 +20,8 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
 
-    <link rel="stylesheet" href="src/css/styles.css" />
-    <link rel="stylesheet" href="src/css/auth/styles.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/auth.css" />
 
   </head>
   <body>
@@ -229,7 +229,7 @@
             data-view="list"
             onclick="showAllItems()"
           >
-            <i class="fas fa-book"></i> Books Catalog
+            <i class="fas fa-book"></i> Books
           </a>
           <a
             href="#"
@@ -698,35 +698,6 @@
       </div>
     </div>
 
-    <div id="requestAccessModal" class="confirm-overlay hidden">
-      <div class="confirm-card animate-fade-in" style="text-align: center;">
-        <div class="confirm-icon-wrap" style="background: rgba(14, 165, 233, 0.16); color: #38bdf8; margin: 0 auto 16px auto;">
-          <i class="fas fa-circle-question"></i>
-        </div>
-        <h3 class="confirm-title" style="text-align: center;">Request Access</h3>
-        <p id="requestAccessMessage" class="confirm-message" style="text-align: center; margin-bottom: 24px;">
-          Are you sure you want to request access to this book?
-        </p>
-        <div class="confirm-actions" style="justify-content: center;">
-          <button
-            type="button"
-            class="confirm-btn cancel"
-            onclick="closeRequestAccessModal()"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            class="confirm-btn danger"
-            style="background: #0ea5e9; box-shadow: 0 8px 18px rgba(14, 165, 233, 0.35);"
-            onclick="confirmRequestAccess()"
-          >
-            Confirm Request
-          </button>
-        </div>
-      </div>
-    </div>
-
     <div id="sidebarOverlay" class="sidebar-overlay hidden"></div>
     <div id="messageBox" class="hidden"></div>
 
@@ -735,19 +706,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
     <!-- Utility Scripts -->
-    <script src="src/js/utils/helpers.js"></script>
-    <script src="src/js/utils/storage.js"></script>
-    <script src="src/js/utils/togglePw.js"></script>
-    <script src="src/js/utils/toggleAuth.js"></script>
-    <script src="src/js/utils/users.js"></script>
-    <script src="src/js/utils/handleLogin.js"></script>
-    <script src="src/js/utils/handleLogout.js"></script>
-    <script src="src/js/utils/spawnBooks.js"></script>
-    <script src="src/js/utils/loginAnimations.js"></script>
+    <script src="../src/js/utils/helpers.js"></script>
+    <script src="../src/js/utils/storage.js"></script>
+    <script src="../src/js/utils/togglePw.js"></script>
+    <script src="../src/js/utils/toggleAuth.js"></script>
+    <script src="../src/js/utils/users.js"></script>
+    <script src="../src/js/utils/handleLogin.js"></script>
+    <script src="../src/js/utils/handleLogout.js"></script>
+    <script src="../src/js/utils/spawnBooks.js"></script>
+    <script src="../src/js/utils/loginAnimations.js"></script>
 
-    <script src="faculty/javascript/faculty.js"></script>
-    <script src="student/javascript/student.js"></script>
-    <script src="src/js/main.js"></script>
-    <script src="faculty/javascript/reports.js"></script>
+    <script src="javascript/faculty.js"></script>
+    <script src="../student/javascript/student.js"></script>
+    <script src="../src/js/main.js"></script>
+    <script src="javascript/reports.js"></script>
   </body>
 </html>

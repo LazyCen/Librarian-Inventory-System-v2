@@ -4,18 +4,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Panel — Librarian Inventory System</title>
-    <meta name="description" content="Admin control panel for managing all requests, users, and books in the Librarian Inventory System." />
+    <meta
+      name="description"
+      content="Admin control panel for managing all requests, users, and books in the Librarian Inventory System."
+    />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
 
-
-    <link rel="stylesheet" href="admin.css" />
+    <link rel="stylesheet" href="css/admin.css" />
   </head>
   <body>
-
     <!-- ===== BACKGROUND ORBS ===== -->
     <div class="bg-orbs" aria-hidden="true">
       <div class="orb orb-1"></div>
@@ -34,27 +41,57 @@
             <span class="brand-title">Admin Panel</span>
             <span class="brand-sub">Librarian System</span>
           </div>
-          <button class="mobile-close-btn" id="mobileClose" aria-label="Close Sidebar"><i class="fas fa-times"></i></button>
+          <button
+            class="mobile-close-btn"
+            id="mobileClose"
+            aria-label="Close Sidebar"
+          >
+            <i class="fas fa-times"></i>
+          </button>
         </div>
 
         <nav class="sidebar-nav">
-          <button class="nav-btn active" data-section="overview" onclick="switchSection('overview')">
+          <button
+            class="nav-btn active"
+            data-section="overview"
+            onclick="switchSection('overview')"
+          >
             <span>Overview</span>
           </button>
-          <button class="nav-btn" data-section="requests" onclick="switchSection('requests')">
+          <button
+            class="nav-btn"
+            data-section="requests"
+            onclick="switchSection('requests')"
+          >
             <span>Access Requests</span>
             <span class="nav-badge" id="navRequestsBadge">0</span>
           </button>
-          <button class="nav-btn" data-section="users" onclick="switchSection('users')">
+          <button
+            class="nav-btn"
+            data-section="users"
+            onclick="switchSection('users')"
+          >
             <span>Users</span>
           </button>
-          <button class="nav-btn" data-section="books" onclick="switchSection('books')">
+          <button
+            class="nav-btn"
+            data-section="books"
+            onclick="switchSection('books')"
+          >
             <span>Books</span>
           </button>
-          <button class="nav-btn" data-section="activity" onclick="switchSection('activity')">
+          <button
+            class="nav-btn"
+            data-section="activity"
+            onclick="switchSection('activity')"
+          >
             <span>Activity Log</span>
           </button>
-          <button class="nav-btn" data-section="reports" onclick="switchSection('reports')">
+          <button
+            class="nav-btn"
+            data-section="reports"
+            onclick="switchSection('reports')"
+          >
             <span>Reports & Analytics</span>
           </button>
         </nav>
@@ -72,10 +109,13 @@
 
       <!-- ===== MAIN CONTENT ===== -->
       <div class="admin-main">
-
         <!-- Top Bar -->
         <header class="admin-topbar">
-          <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle Navigation">
+          <button
+            class="mobile-toggle"
+            id="mobileToggle"
+            aria-label="Toggle Navigation"
+          >
             <i class="fas fa-bars-staggered"></i>
           </button>
           <div class="topbar-title">
@@ -86,7 +126,11 @@
               <span class="live-dot"></span>
               <span>Live</span>
             </div>
-            <button class="btn-refresh" onclick="refreshAll()" title="Refresh data">
+            <button
+              class="btn-refresh"
+              onclick="refreshAll()"
+              title="Refresh data"
+            >
               ↻
             </button>
           </div>
@@ -94,7 +138,6 @@
 
         <!-- ===== SECTION: OVERVIEW ===== -->
         <section id="section-overview" class="admin-section active">
-
           <!-- Stats Grid -->
           <div class="stats-grid">
             <div class="stat-card stat-blue">
@@ -132,9 +175,24 @@
             <div class="panel-header">
               <span class="panel-title">Usage Statistics</span>
               <div class="filter-tabs" id="usageTabs">
-                <button class="filter-tab active" onclick="updateUsageChart('daily', this)">Daily</button>
-                <button class="filter-tab" onclick="updateUsageChart('weekly', this)">Weekly</button>
-                <button class="filter-tab" onclick="updateUsageChart('monthly', this)">Monthly</button>
+                <button
+                  class="filter-tab active"
+                  onclick="updateUsageChart('daily', this)"
+                >
+                  Daily
+                </button>
+                <button
+                  class="filter-tab"
+                  onclick="updateUsageChart('weekly', this)"
+                >
+                  Weekly
+                </button>
+                <button
+                  class="filter-tab"
+                  onclick="updateUsageChart('monthly', this)"
+                >
+                  Monthly
+                </button>
               </div>
             </div>
             <div class="ov-chart-body">
@@ -144,7 +202,6 @@
 
           <!-- Middle row: 3 panels -->
           <div class="ov-grid-3">
-
             <div class="panel">
               <div class="panel-header">
                 <span class="panel-title">Most Requested Books</span>
@@ -162,16 +219,16 @@
             <div class="panel">
               <div class="panel-header">
                 <span class="panel-title">Recently Active Users</span>
-                <button class="panel-link" onclick="switchSection('users')">View all</button>
+                <button class="panel-link" onclick="switchSection('users')">
+                  View all
+                </button>
               </div>
               <div id="overviewActiveUsers" class="panel-body"></div>
             </div>
-
           </div>
 
           <!-- Bottom row: 2 panels -->
           <div class="ov-grid-2">
-
             <div class="panel">
               <div class="panel-header">
                 <span class="panel-title">Top Reading Durations</span>
@@ -185,25 +242,63 @@
               </div>
               <div id="overviewCategories" class="category-bar-container"></div>
             </div>
-
           </div>
-
         </section>
 
         <!-- ===== SECTION: ACCESS REQUESTS ===== -->
         <section id="section-requests" class="admin-section">
-
           <div class="section-toolbar">
             <div class="filter-tabs" id="requestTabs">
-              <button class="filter-tab active" data-filter="all" onclick="filterRequests('all', this)">All</button>
-              <button class="filter-tab" data-filter="Pending" onclick="filterRequests('Pending', this)">Pending</button>
-              <button class="filter-tab" data-filter="Approved" onclick="filterRequests('Approved', this)">Approved</button>
-              <button class="filter-tab" data-filter="Rejected" onclick="filterRequests('Rejected', this)">Rejected</button>
-              <button class="filter-tab" data-filter="Expired" onclick="filterRequests('Expired', this)">Expired</button>
-              <button class="filter-tab" data-filter="Revoked" onclick="filterRequests('Revoked', this)">Revoked</button>
+              <button
+                class="filter-tab active"
+                data-filter="all"
+                onclick="filterRequests('all', this)"
+              >
+                All
+              </button>
+              <button
+                class="filter-tab"
+                data-filter="Pending"
+                onclick="filterRequests('Pending', this)"
+              >
+                Pending
+              </button>
+              <button
+                class="filter-tab"
+                data-filter="Approved"
+                onclick="filterRequests('Approved', this)"
+              >
+                Approved
+              </button>
+              <button
+                class="filter-tab"
+                data-filter="Rejected"
+                onclick="filterRequests('Rejected', this)"
+              >
+                Rejected
+              </button>
+              <button
+                class="filter-tab"
+                data-filter="Expired"
+                onclick="filterRequests('Expired', this)"
+              >
+                Expired
+              </button>
+              <button
+                class="filter-tab"
+                data-filter="Revoked"
+                onclick="filterRequests('Revoked', this)"
+              >
+                Revoked
+              </button>
             </div>
             <div class="toolbar-search">
-              <input type="text" id="requestSearch" placeholder="Search student or book…" oninput="renderRequests()" />
+              <input
+                type="text"
+                id="requestSearch"
+                placeholder="Search student or book…"
+                oninput="renderRequests()"
+              />
             </div>
           </div>
 
@@ -227,22 +322,55 @@
               <p>No access requests found.</p>
             </div>
           </div>
-
         </section>
 
         <!-- ===== SECTION: USERS ===== -->
         <section id="section-users" class="admin-section">
-
           <div class="section-toolbar">
             <div class="filter-tabs" id="userTabs">
-              <button class="filter-tab active" data-filter="all" onclick="filterUsers('all', this)">All Users</button>
-              <button class="filter-tab" data-filter="Faculty" onclick="filterUsers('Faculty', this)">Faculty</button>
-              <button class="filter-tab" data-filter="Student" onclick="filterUsers('Student', this)">Students</button>
-              <button class="filter-tab" data-filter="Active" onclick="filterUsers('Active', this)">Active</button>
-              <button class="filter-tab" data-filter="Inactive" onclick="filterUsers('Inactive', this)">Inactive</button>
+              <button
+                class="filter-tab active"
+                data-filter="all"
+                onclick="filterUsers('all', this)"
+              >
+                All Users
+              </button>
+              <button
+                class="filter-tab"
+                data-filter="Faculty"
+                onclick="filterUsers('Faculty', this)"
+              >
+                Faculty
+              </button>
+              <button
+                class="filter-tab"
+                data-filter="Student"
+                onclick="filterUsers('Student', this)"
+              >
+                Students
+              </button>
+              <button
+                class="filter-tab"
+                data-filter="Active"
+                onclick="filterUsers('Active', this)"
+              >
+                Active
+              </button>
+              <button
+                class="filter-tab"
+                data-filter="Inactive"
+                onclick="filterUsers('Inactive', this)"
+              >
+                Inactive
+              </button>
             </div>
             <div class="toolbar-search">
-              <input type="text" id="userSearch" placeholder="Search by name or email…" oninput="renderUsers()" />
+              <input
+                type="text"
+                id="userSearch"
+                placeholder="Search by name or email…"
+                oninput="renderUsers()"
+              />
             </div>
           </div>
 
@@ -266,24 +394,59 @@
               <p>No users found.</p>
             </div>
           </div>
-
         </section>
 
         <!-- ===== SECTION: BOOKS ===== -->
         <section id="section-books" class="admin-section">
-
           <div class="section-toolbar">
             <div class="filter-tabs" id="bookTabs">
-              <button class="filter-tab active" data-filter="all" onclick="filterBooks('all', this)">All</button>
-              <button class="filter-tab" data-filter="Books" onclick="filterBooks('Books', this)">In Library</button>
-              <button class="filter-tab" data-filter="Borrowed" onclick="filterBooks('Borrowed', this)">Borrowed</button>
-              <button class="filter-tab" data-filter="Returned" onclick="filterBooks('Returned', this)">Returned</button>
-              <button class="filter-tab" data-filter="Archived" onclick="filterBooks('Archived', this)">Archived</button>
+              <button
+                class="filter-tab active"
+                data-filter="all"
+                onclick="filterBooks('all', this)"
+              >
+                All
+              </button>
+              <button
+                class="filter-tab"
+                data-filter="Books"
+                onclick="filterBooks('Books', this)"
+              >
+                In Library
+              </button>
+              <button
+                class="filter-tab"
+                data-filter="Borrowed"
+                onclick="filterBooks('Borrowed', this)"
+              >
+                Borrowed
+              </button>
+              <button
+                class="filter-tab"
+                data-filter="Returned"
+                onclick="filterBooks('Returned', this)"
+              >
+                Returned
+              </button>
+              <button
+                class="filter-tab"
+                data-filter="Archived"
+                onclick="filterBooks('Archived', this)"
+              >
+                Archived
+              </button>
             </div>
             <div class="toolbar-search">
-              <input type="text" id="bookSearch" placeholder="Search title, author…" oninput="renderBooks()" />
+              <input
+                type="text"
+                id="bookSearch"
+                placeholder="Search title, author…"
+                oninput="renderBooks()"
+              />
             </div>
-            <button class="btn-add-book" onclick="openAddBookModal()">+ Add Book</button>
+            <button class="btn-add-book" onclick="openAddBookModal()">
+              + Add Book
+            </button>
           </div>
 
           <div class="table-wrap">
@@ -307,7 +470,6 @@
               <p>No books found.</p>
             </div>
           </div>
-
         </section>
 
         <!-- ===== SECTION: ACTIVITY LOG ===== -->
@@ -322,11 +484,14 @@
 
         <!-- ===== SECTION: REPORTS ===== -->
         <section id="section-reports" class="admin-section">
-
           <!-- Export toolbar -->
           <div class="rpt-toolbar">
-            <button class="btn-export-pdf" onclick="exportReport('pdf')">Export to PDF</button>
-            <button class="btn-export-excel" onclick="exportReport('excel')">Export to Excel</button>
+            <button class="btn-export-pdf" onclick="exportReport('pdf')">
+              Export to PDF
+            </button>
+            <button class="btn-export-excel" onclick="exportReport('excel')">
+              Export to Excel
+            </button>
           </div>
 
           <!-- Reading Analytics — full width -->
@@ -341,12 +506,11 @@
 
           <!-- Peak Hours | Department Usage — 2 columns -->
           <div class="ov-grid-2">
-
             <div class="panel">
               <div class="panel-header">
                 <span class="panel-title">Peak Reading Hours</span>
               </div>
-              <div class="ov-chart-body" style="height:220px;">
+              <div class="ov-chart-body" style="height: 220px">
                 <canvas id="peakHoursChart"></canvas>
               </div>
             </div>
@@ -355,16 +519,14 @@
               <div class="panel-header">
                 <span class="panel-title">Department-wise Usage</span>
               </div>
-              <div class="ov-chart-body" style="height:220px;">
+              <div class="ov-chart-body" style="height: 220px">
                 <canvas id="departmentUsageChart"></canvas>
               </div>
             </div>
-
           </div>
 
           <!-- Most Active Students | Most Requested Books — 2 columns -->
           <div class="ov-grid-2">
-
             <div class="panel">
               <div class="panel-header">
                 <span class="panel-title">Most Active Students</span>
@@ -382,24 +544,28 @@
                 <!-- Populated by JS -->
               </div>
             </div>
-
           </div>
 
           <!-- Faculty Recommendations — full width -->
           <div class="panel ov-full">
             <div class="panel-header">
-              <span class="panel-title">Faculty Recommendations <span class="panel-badge">Coming Soon</span></span>
+              <span class="panel-title"
+                >Faculty Recommendations
+                <span class="panel-badge">Coming Soon</span></span
+              >
             </div>
-            <div class="panel-body" style="padding:20px;">
-              <p style="color:var(--text-muted);font-style:italic;">This section will display insights on faculty-recommended reading materials and their adoption rates among students.</p>
+            <div class="panel-body" style="padding: 20px">
+              <p style="color: var(--text-muted); font-style: italic">
+                This section will display insights on faculty-recommended
+                reading materials and their adoption rates among students.
+              </p>
             </div>
           </div>
-
         </section>
-
-      </div><!-- /admin-main -->
-
-    </div><!-- /admin-app -->
+      </div>
+      <!-- /admin-main -->
+    </div>
+    <!-- /admin-app -->
 
     <!-- ===== TOAST NOTIFICATIONS ===== -->
     <div id="adminToast" class="admin-toast hidden"></div>
@@ -407,13 +573,20 @@
     <!-- ===== CONFIRM MODAL ===== -->
     <div id="adminConfirm" class="admin-modal-overlay hidden">
       <div class="admin-modal-card animate-fade-in">
-        <div class="modal-icon-wrap danger">
-        </div>
+        <div class="modal-icon-wrap danger"></div>
         <h3 id="confirmTitle">Are you sure?</h3>
         <p id="confirmMsg">This action cannot be undone.</p>
         <div class="modal-actions">
-          <button class="btn-cancel" onclick="closeAdminConfirm()">Cancel</button>
-          <button class="btn-danger" id="confirmOkBtn" onclick="executeAdminConfirm()">Confirm</button>
+          <button class="btn-cancel" onclick="closeAdminConfirm()">
+            Cancel
+          </button>
+          <button
+            class="btn-danger"
+            id="confirmOkBtn"
+            onclick="executeAdminConfirm()"
+          >
+            Confirm
+          </button>
         </div>
       </div>
     </div>
@@ -423,11 +596,15 @@
       <div class="admin-modal-card wide animate-fade-in">
         <div class="modal-header-row">
           <h3>User Details</h3>
-          <button class="modal-close" onclick="closeModal('userDetailModal')">✕</button>
+          <button class="modal-close" onclick="closeModal('userDetailModal')">
+            ✕
+          </button>
         </div>
         <div id="userDetailBody"></div>
         <div class="modal-actions">
-          <button class="btn-cancel" onclick="closeModal('userDetailModal')">Close</button>
+          <button class="btn-cancel" onclick="closeModal('userDetailModal')">
+            Close
+          </button>
         </div>
       </div>
     </div>
@@ -437,11 +614,15 @@
       <div class="admin-modal-card wide animate-fade-in">
         <div class="modal-header-row">
           <h3>Book Details</h3>
-          <button class="modal-close" onclick="closeModal('bookDetailModal')">✕</button>
+          <button class="modal-close" onclick="closeModal('bookDetailModal')">
+            ✕
+          </button>
         </div>
         <div id="bookDetailBody"></div>
         <div class="modal-actions">
-          <button class="btn-cancel" onclick="closeModal('bookDetailModal')">Close</button>
+          <button class="btn-cancel" onclick="closeModal('bookDetailModal')">
+            Close
+          </button>
         </div>
       </div>
     </div>
@@ -449,14 +630,17 @@
     <!-- ===== APPROVE REQUEST MODAL ===== -->
     <div id="approveModal" class="admin-modal-overlay hidden">
       <div class="admin-modal-card animate-fade-in">
-        <div class="modal-icon-wrap approve-icon">
-        </div>
+        <div class="modal-icon-wrap approve-icon"></div>
         <h3>Approve Request</h3>
         <p id="approveMsg">Grant access to this book?</p>
         <div class="field-group">
           <label class="field-label">Access Expiration</label>
           <div class="field-wrap">
-            <select id="approveExpiry" class="field-input" style="padding-left:14px">
+            <select
+              id="approveExpiry"
+              class="field-input"
+              style="padding-left: 14px"
+            >
               <option value="7">7 Days</option>
               <option value="14">14 Days</option>
               <option value="30" selected>30 Days</option>
@@ -469,12 +653,25 @@
         <div class="field-group hidden" id="approveCustomDateWrap">
           <label class="field-label">Custom Expiry Date</label>
           <div class="field-wrap">
-            <input type="date" id="approveCustomDate" class="field-input" style="padding-left:14px" />
+            <input
+              type="date"
+              id="approveCustomDate"
+              class="field-input"
+              style="padding-left: 14px"
+            />
           </div>
         </div>
         <div class="modal-actions">
-          <button class="btn-cancel" onclick="closeModal('approveModal')">Cancel</button>
-          <button class="btn-approve" id="approveOkBtn" onclick="executeApprove()">Approve</button>
+          <button class="btn-cancel" onclick="closeModal('approveModal')">
+            Cancel
+          </button>
+          <button
+            class="btn-approve"
+            id="approveOkBtn"
+            onclick="executeApprove()"
+          >
+            Approve
+          </button>
         </div>
       </div>
     </div>
@@ -482,19 +679,28 @@
     <!-- ===== REJECT REQUEST MODAL ===== -->
     <div id="rejectModal" class="admin-modal-overlay hidden">
       <div class="admin-modal-card animate-fade-in">
-        <div class="modal-icon-wrap danger">
-        </div>
+        <div class="modal-icon-wrap danger"></div>
         <h3>Reject Request</h3>
         <p id="rejectMsg">Reject access to this book?</p>
         <div class="field-group">
           <label class="field-label">Reason for Rejection</label>
           <div class="field-wrap">
-            <textarea id="rejectRemarks" class="field-input" rows="3" placeholder="Enter reason…" style="padding-left:14px;resize:vertical"></textarea>
+            <textarea
+              id="rejectRemarks"
+              class="field-input"
+              rows="3"
+              placeholder="Enter reason…"
+              style="padding-left: 14px; resize: vertical"
+            ></textarea>
           </div>
         </div>
         <div class="modal-actions">
-          <button class="btn-cancel" onclick="closeModal('rejectModal')">Cancel</button>
-          <button class="btn-danger" id="rejectOkBtn" onclick="executeReject()">Reject</button>
+          <button class="btn-cancel" onclick="closeModal('rejectModal')">
+            Cancel
+          </button>
+          <button class="btn-danger" id="rejectOkBtn" onclick="executeReject()">
+            Reject
+          </button>
         </div>
       </div>
     </div>
@@ -504,34 +710,60 @@
       <div class="admin-modal-card wide animate-fade-in">
         <div class="modal-header-row">
           <h3 id="bookFormTitle">Add New Book</h3>
-          <button class="modal-close" onclick="closeModal('bookFormModal')">✕</button>
+          <button class="modal-close" onclick="closeModal('bookFormModal')">
+            ✕
+          </button>
         </div>
         <div class="book-form">
           <input type="hidden" id="bookFormOrigName" value="" />
           <div class="field-group">
             <label class="field-label">Book Title *</label>
             <div class="field-wrap">
-              <input type="text" id="bookFormName" class="field-input" style="padding-left:14px" placeholder="Enter book title" />
+              <input
+                type="text"
+                id="bookFormName"
+                class="field-input"
+                style="padding-left: 14px"
+                placeholder="Enter book title"
+              />
             </div>
           </div>
           <div class="field-group">
             <label class="field-label">Author</label>
             <div class="field-wrap">
-              <input type="text" id="bookFormAuthor" class="field-input" style="padding-left:14px" placeholder="Author name" />
+              <input
+                type="text"
+                id="bookFormAuthor"
+                class="field-input"
+                style="padding-left: 14px"
+                placeholder="Author name"
+              />
             </div>
           </div>
           <div class="field-group">
             <label class="field-label">Categories (comma-separated)</label>
             <div class="field-wrap">
-              <input type="text" id="bookFormTags" class="field-input" style="padding-left:14px" placeholder="e.g. Fiction, Non-Fiction, Academic Work" />
+              <input
+                type="text"
+                id="bookFormTags"
+                class="field-input"
+                style="padding-left: 14px"
+                placeholder="e.g. Fiction, Non-Fiction, Academic Work"
+              />
             </div>
           </div>
           <div class="field-group">
             <label class="field-label">Access Level</label>
             <div class="field-wrap">
-              <select id="bookFormAccess" class="field-input" style="padding-left:14px">
+              <select
+                id="bookFormAccess"
+                class="field-input"
+                style="padding-left: 14px"
+              >
                 <option value="Public">Public — All users</option>
-                <option value="Restricted" selected>Restricted — Request required</option>
+                <option value="Restricted" selected>
+                  Restricted — Request required
+                </option>
                 <option value="Faculty">Faculty Only</option>
               </select>
             </div>
@@ -539,19 +771,39 @@
           <div class="field-group">
             <label class="field-label">PDF File (optional)</label>
             <div class="field-wrap">
-              <input type="file" id="bookFormPdf" accept=".pdf" class="field-input" style="padding:10px 14px" />
+              <input
+                type="file"
+                id="bookFormPdf"
+                accept=".pdf"
+                class="field-input"
+                style="padding: 10px 14px"
+              />
             </div>
-            <div id="bookFormPdfStatus" style="font-size:.78rem;color:var(--text-muted);margin-top:6px"></div>
+            <div
+              id="bookFormPdfStatus"
+              style="
+                font-size: 0.78rem;
+                color: var(--text-muted);
+                margin-top: 6px;
+              "
+            ></div>
           </div>
         </div>
         <div class="modal-actions">
-          <button class="btn-cancel" onclick="closeModal('bookFormModal')">Cancel</button>
-          <button class="btn-approve" id="bookFormSaveBtn" onclick="saveBookForm()">Add Book</button>
+          <button class="btn-cancel" onclick="closeModal('bookFormModal')">
+            Cancel
+          </button>
+          <button
+            class="btn-approve"
+            id="bookFormSaveBtn"
+            onclick="saveBookForm()"
+          >
+            Add Book
+          </button>
         </div>
       </div>
     </div>
 
-
-    <script src="admin.js"></script>
+    <script src="javascript/admin.js"></script>
   </body>
 </html>

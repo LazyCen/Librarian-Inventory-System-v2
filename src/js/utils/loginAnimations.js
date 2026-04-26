@@ -1,39 +1,26 @@
 /**
- * GSAP Animations for the authentication section
+ * Handles UI animations for the login/signup screens using GSAP.
  */
 document.addEventListener('DOMContentLoaded', () => {
-    const authSection = document.getElementById('auth-section');
-    const glassContainer = authSection?.querySelector('.glass-container');
-    
-    if (!authSection || !glassContainer) return;
+    const card = document.querySelector('.glass-container');
+    if (!card) return;
 
-    // Use only the login form elements to prevent issues with hidden display:none signup elements
-    const loginForm = document.getElementById('loginForm');
-    const loginLogo = glassContainer.querySelector('.login-logo-row');
-    const authInputs = loginForm ? loginForm.querySelectorAll('.auth-input') : [];
-    const btnSignin = loginForm ? loginForm.querySelectorAll('.btn-signin') : [];
-
-    // Remove CSS animation classes to prevent conflicts
-    glassContainer.classList.remove('animate-fade-in');
-
-    // Initial Login Card Entrance
-    // Use simpler animation on mobile (no scale, simpler ease) to avoid lagging the backdrop-filter blur
-    const isMobile = window.innerWidth < 768;
-    
-    gsap.fromTo(glassContainer, 
-        {
-            y: 30,
-            opacity: 0,
-            autoAlpha: 0,
-            scale: isMobile ? 1 : 0.98
-        },
-        {
-            duration: isMobile ? 0.4 : 0.6,
-            y: 0,
+    // Ensure the card is visible and animate it in
+    if (typeof gsap !== 'undefined') {
+        gsap.to(card, {
             opacity: 1,
-            autoAlpha: 1,
+            y: 0,
             scale: 1,
-            ease: isMobile ? "power2.out" : "back.out(1.2)"
-        }
-    );
+            duration: 1,
+            ease: 'power4.out',
+            delay: 0.2,
+            onStart: () => {
+                card.style.visibility = 'visible';
+            }
+        });
+    } else {
+        // Fallback if GSAP is not loaded
+        card.style.opacity = '1';
+        card.style.visibility = 'visible';
+    }
 });

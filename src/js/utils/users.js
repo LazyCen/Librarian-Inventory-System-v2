@@ -46,7 +46,7 @@ function setUserOnline(email) {
     
     // On a local-storage based system, only one user can be truly 'online' per browser.
     // We clear the set first to remove any 'ghost' sessions from previous users.
-    const set = new Set(); 
+    const set = getOnlineSet(); 
     set.add(email);
     
     saveOnlineSet(set);
@@ -210,17 +210,6 @@ function renderUsersPanel() {
 function initPresenceTracking() {
     const email = getCurrentUserEmail();
 
-    // Tab hidden / visible (e.g. switching tabs)
-    document.addEventListener('visibilitychange', () => {
-        const cur = getCurrentUserEmail();
-        if (!cur) return;
-        if (document.visibilityState === 'hidden') {
-            setUserOffline(cur);
-        } else {
-            setUserOnline(cur);
-        }
-    });
-
     // Tab / window closed
     window.addEventListener('beforeunload', () => {
         const cur = getCurrentUserEmail();
@@ -231,6 +220,13 @@ function initPresenceTracking() {
     if (email) {
         setUserOnline(email);
     }
+
+    // Cross-tab Synchronization
+    window.addEventListener('storage', (e) => {
+        if (e.key === ONLINE_USERS_KEY || e.key === 'lisAuthUsers') {
+            renderUsersPanel();
+        }
+    });
 }
 
 /* ------------------------------------------------------------------ */

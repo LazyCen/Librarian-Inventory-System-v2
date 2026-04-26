@@ -9,9 +9,9 @@
         if (!layer) return;
         layer.innerHTML = '';
         
-        // Reduce count on mobile to improve performance
+        // Use a consistent count for a filled background
         const isMobile = window.innerWidth < 768;
-        const TOTAL = isMobile ? 12 : 40; 
+        const TOTAL = isMobile ? 15 : 45; 
         
         const icons = [
             'fas fa-book', 
@@ -25,35 +25,33 @@
             const book = document.createElement('div');
             book.classList.add('book');
             
-            // Depth controls size, blur, and opacity for parallax
+            // Depth controls size, blur, and opacity for parallax look (even if static)
             const depth = Math.random(); 
             const size = 20 + (depth * 40); // 20px to 60px
             const blur = (1 - depth) * 4; // up to 4px blur
-            const opacity = (0.15 + (depth * 0.5)).toFixed(2); // 0.15 to 0.65
+            const opacity = (0.15 + (depth * 0.45)).toFixed(2); // 0.15 to 0.60
             
-            // Random position across the entire screen
-            const xPos = (Math.random() * 100).toFixed(1); // 0vw to 100vw
-            const yPos = (Math.random() * 100).toFixed(1); // 0vh to 100vh
-            
-            // Random static rotation
-            const rot = (Math.random() * 360).toFixed(1);
+            // Random static position across the entire screen
+            const posX = Math.random() * 100; // 0vw to 100vw
+            const posY = Math.random() * 100; // 0vh to 100vh
+            const rotation = Math.random() * 360;
             
             // Base styling for the book element
             book.style.width = `${size}px`;
             book.style.height = `${size}px`;
             book.style.fontSize = `${size}px`;
             book.style.position = 'absolute';
-            book.style.left = `${xPos}vw`;
-            book.style.top = `${yPos}vh`;
+            book.style.left = `${posX}vw`;
+            book.style.top = `${posY}vh`;
             book.style.color = '#e0f2fe';
-            book.style.opacity = opacity; // Maintain the depth-of-field opacity
-            book.style.transform = `rotate(${rot}deg)`;
+            book.style.opacity = opacity;
+            book.style.transform = `rotate(${rotation}deg)`;
             
-            // Simplify or remove expensive filters on mobile for buttery smooth performance
+            // Apply filters for depth effect
             if (isMobile) {
                 book.style.filter = `drop-shadow(0 0 4px rgba(255,255,255,0.2))`;
             } else {
-                book.style.filter = `drop-shadow(0 0 ${8 + depth * 12}px rgba(255,255,255,${0.2 + depth * 0.4})) blur(${blur}px)`;
+                book.style.filter = `drop-shadow(0 0 ${6 + depth * 10}px rgba(255,255,255,${0.15 + depth * 0.3})) blur(${blur}px)`;
             }
             
             const ic = document.createElement('i');

@@ -25,6 +25,22 @@ function getUsers() {
 function getOnlineSet() {
   try { return new Set(JSON.parse(localStorage.getItem(ONLINE_USERS_KEY) || '[]')); } catch { return new Set(); }
 }
+function saveOnlineSet(set) {
+  localStorage.setItem(ONLINE_USERS_KEY, JSON.stringify([...set]));
+}
+function setUserOnline(email) {
+  if (!email) return;
+  const set = getOnlineSet();
+  // We don't clear the set here to allow multiple sessions if testing cross-tab
+  set.add(email);
+  saveOnlineSet(set);
+}
+function setUserOffline(email) {
+  if (!email) return;
+  const set = getOnlineSet();
+  set.delete(email);
+  saveOnlineSet(set);
+}
 function fmtDate(iso) {
   if (!iso) return '—';
   const d = new Date(iso);
@@ -137,6 +153,23 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   refreshAll();
+
+  // Presence Tracking
+  if (currentEmail) {
+    setUserOnline(currentEmail);
+  }
+
+  window.addEventListener('beforeunload', () => {
+    const cur = localStorage.getItem(CURRENT_USER_KEY);
+    if (cur) setUserOffline(cur);
+  });
+
+  // Cross-tab Synchronization
+  window.addEventListener('storage', (e) => {
+    if (e.key === ONLINE_USERS_KEY || e.key === AUTH_USERS_KEY) {
+      refreshAll();
+    }
+  });
 });
 
 // --- NAVIGATION ---

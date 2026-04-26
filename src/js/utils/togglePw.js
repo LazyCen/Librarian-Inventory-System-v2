@@ -1,18 +1,17 @@
 /**
  * Toggles the visibility of a password input field.
- * Changes the input type between 'password' and 'text', and updates the toggle icon.
- * 
- * @param {string} inputId - The HTML ID of the password input element.
- * @param {HTMLElement} btn - The button element containing the toggle icon.
+ * @param {string} inputId - The ID of the input element to toggle.
+ * @param {HTMLElement} btn - The button element that triggered the toggle.
  */
 function togglePw(inputId, btn) {
     const input = document.getElementById(inputId);
+    if (!input) return;
+
+    const isPw = input.type === 'password';
+    input.type = isPw ? 'text' : 'password';
+
     const icon = btn.querySelector('i');
-    if (input.type === 'password') {
-        input.type = 'text';
-        icon.classList.replace('fa-eye', 'fa-eye-slash');
-    } else {
-        input.type = 'password';
-        icon.classList.replace('fa-eye-slash', 'fa-eye');
+    if (icon) {
+        icon.className = isPw ? 'fas fa-eye-slash' : 'fas fa-eye';
     }
 }

@@ -20,17 +20,14 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
 
-    <link rel="stylesheet" href="src/css/styles.css" />
-    <link rel="stylesheet" href="src/css/auth/styles.css" />
-
+    <link rel="stylesheet" href="frontend/faculty/css/styles.css" />
+    <link rel="stylesheet" href="frontend/faculty/css/auth.css" />
   </head>
   <body>
-    <!-- Floating Books Layer -->
-    <div class="books-layer" id="booksLayer"></div>
-
     <!--  AUTH SECTION  -->
-
     <div id="auth-section" class="login-body">
+      <!-- Floating Books Layer -->
+      <div class="books-layer" id="booksLayer"></div>
 
       <!-- Login Card -->
       <div
@@ -44,7 +41,10 @@
         </div>
 
         <!-- ROLE SELECTOR -->
-        <div id="roleSelector" style="display: flex; flex-direction: column; gap: 14px">
+        <div
+          id="roleSelector"
+          style="display: flex; flex-direction: column; gap: 14px"
+        >
           <p class="role-select-label">I am a...</p>
           <div class="role-picker-grid">
             <button
@@ -53,7 +53,9 @@
               class="role-picker-btn"
               onclick="selectRole('Faculty')"
             >
-              <span class="role-icon"><i class="fas fa-chalkboard-teacher"></i></span>
+              <span class="role-icon"
+                ><i class="fas fa-chalkboard-teacher"></i
+              ></span>
               <span class="role-name">Faculty</span>
               <span class="role-desc">Full access</span>
             </button>
@@ -63,7 +65,9 @@
               class="role-picker-btn"
               onclick="selectRole('Student')"
             >
-              <span class="role-icon"><i class="fas fa-user-graduate"></i></span>
+              <span class="role-icon"
+                ><i class="fas fa-user-graduate"></i
+              ></span>
               <span class="role-name">Student</span>
               <span class="role-desc">View access</span>
             </button>
@@ -76,12 +80,22 @@
           id="loginForm"
           style="display: none; flex-direction: column; gap: 14px"
         >
-          <div class="role-selected-badge" onclick="goBackToRoleSelection()" style="cursor:pointer" title="Click to change role">
+          <div
+            class="role-selected-badge"
+            onclick="goBackToRoleSelection()"
+            style="cursor: pointer"
+            title="Click to change role"
+          >
             <span id="loginRoleBadgeContent"></span>
-            <i class="fas fa-chevron-right" style="font-size: 0.7rem; margin-left: auto; opacity: 0.5;"></i>
+            <i
+              class="fas fa-chevron-right"
+              style="font-size: 0.7rem; margin-left: auto; opacity: 0.5"
+            ></i>
           </div>
           <div>
-            <label class="auth-label" for="loginIdentifier">Email or ID Number</label>
+            <label class="auth-label" for="loginIdentifier"
+              >Email or ID Number</label
+            >
             <input
               id="loginIdentifier"
               type="text"
@@ -130,8 +144,17 @@
           style="display: none; flex-direction: column; gap: 14px"
         >
           <!-- Registration Fields -->
-          <div id="signupFields" style="display:flex; flex-direction:column; gap:14px;">
-            <div class="role-selected-badge" id="roleSelectedBadge" onclick="goBackToRoleSelection()" style="cursor:pointer" title="Click to change role"></div>
+          <div
+            id="signupFields"
+            style="display: flex; flex-direction: column; gap: 14px"
+          >
+            <div
+              class="role-selected-badge"
+              id="roleSelectedBadge"
+              onclick="goBackToRoleSelection()"
+              style="cursor: pointer"
+              title="Click to change role"
+            ></div>
             <div>
               <label class="auth-label" for="signupName">Full Name</label>
               <input
@@ -181,7 +204,11 @@
                 <i class="fas fa-eye"></i>
               </button>
             </div>
-            <button type="submit" class="btn-signin" style="background: #166534">
+            <button
+              type="submit"
+              class="btn-signin"
+              style="background: #166534"
+            >
               Create Account
             </button>
           </div>
@@ -283,7 +310,11 @@
           </div>
 
           <div class="header-actions">
-            <button class="btn-primary" id="registerBookBtn" onclick="openAddItemModal()">
+            <button
+              class="btn-primary"
+              id="registerBookBtn"
+              onclick="openAddItemModal()"
+            >
               <i class="fas fa-plus"></i> Register Book
             </button>
           </div>
@@ -310,19 +341,25 @@
         <div id="view-requests" class="view-content hidden">
           <div class="view-header">
             <h2 class="view-title">Book Access Requests</h2>
-            <p class="view-subtitle">Monitor and manage your requests for restricted library materials</p>
+            <p class="view-subtitle">
+              Monitor and manage your requests for restricted library materials
+            </p>
           </div>
-          
+
           <div class="filter-section animate-fade-in">
-             <div class="filter-group">
-               <label class="filter-label">Status Filter</label>
-               <select id="requestStatusFilter" class="filter-select" onchange="renderRequestsView()">
-                 <option value="all">All Requests</option>
-                 <option value="Pending">Pending</option>
-                 <option value="Approved">Approved</option>
-                 <option value="Rejected">Rejected</option>
-               </select>
-             </div>
+            <div class="filter-group">
+              <label class="filter-label">Status Filter</label>
+              <select
+                id="requestStatusFilter"
+                class="filter-select"
+                onchange="renderRequestsView()"
+              >
+                <option value="all">All Requests</option>
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+            </div>
           </div>
 
           <div id="requestsList" class="item-grid fade-in">
@@ -334,9 +371,20 @@
         <div id="view-history" class="view-content hidden">
           <div class="view-header">
             <h2 class="view-title">Reading History</h2>
-            <p class="view-subtitle">Track your reading progress and sessions</p>
+            <p class="view-subtitle">
+              Track your reading progress and sessions
+            </p>
           </div>
-          <div id="historyList" class="history-list fade-in" style="display: flex; flex-direction: column; gap: 16px; margin-top: 20px;">
+          <div
+            id="historyList"
+            class="history-list fade-in"
+            style="
+              display: flex;
+              flex-direction: column;
+              gap: 16px;
+              margin-top: 20px;
+            "
+          >
             <!-- History items will be injected here -->
           </div>
         </div>
@@ -347,7 +395,6 @@
             <!-- Total Books -->
             <div class="stats-card">
               <div class="stats-header">
-                <i class="fas fa-book stats-card-icon" style="color: #3b82f6;"></i>
                 <span>Total Titles</span>
               </div>
               <div class="stats-body">
@@ -360,7 +407,6 @@
             <!-- Total Tags -->
             <div class="stats-card">
               <div class="stats-header">
-                <i class="fas fa-tags stats-card-icon" style="color: #f43f5e;"></i>
                 <span>Categories</span>
               </div>
               <div class="stats-body">
@@ -373,7 +419,6 @@
             <!-- Total Bins -->
             <div class="stats-card" id="dashBinStatusCard">
               <div class="stats-header">
-                <i class="fas fa-layer-group stats-card-icon" style="color: #34d399;"></i>
                 <span>Bin Status</span>
               </div>
               <div class="stats-body">
@@ -386,20 +431,19 @@
             <!-- Recent Activity -->
             <div class="stats-card">
               <div class="stats-header">
-                <i class="fas fa-calendar-plus stats-card-icon" style="color: #f59e0b;"></i>
                 <span>Recent Adds</span>
               </div>
               <div class="stats-body">
                 <div>
                   <div class="stats-number" id="dashRecentItems">0</div>
-                <div class="stats-label">Added today</div>
+                  <div class="stats-label">Added today</div>
                 </div>
               </div>
             </div>
           </div>
 
           <!-- Quick Actions -->
-          <div class="librarian-panel" style="margin-top: 24px;">
+          <div class="librarian-panel" style="margin-top: 24px">
             <div class="librarian-widget">
               <h3>Quick Actions</h3>
               <div class="librarian-actions">
@@ -415,11 +459,12 @@
             <!-- Left: Category Breakdown -->
             <div class="chart-card">
               <div class="chart-header">
-                <span class="chart-title">
-                  Categories
-                </span>
+                <span class="chart-title"> Categories </span>
               </div>
-              <div class="chart-content" style="flex-direction: column; align-items: center; gap: 20px;">
+              <div
+                class="chart-content"
+                style="flex-direction: column; align-items: center; gap: 20px"
+              >
                 <div class="chart-viz">
                   <svg
                     class="donut-svg"
@@ -431,13 +476,28 @@
                     <!-- Donut segments will be injected here -->
                   </svg>
                   <div class="chart-center">
-                    <div class="center-label" id="donutCenterIcon">
+                    <div class="center-label" id="donutCenterIcon"></div>
+                    <div
+                      class="center-val"
+                      id="donutCenterText"
+                      style="font-size: 0.9rem"
+                    >
+                      Category
                     </div>
-                    <div class="center-val" id="donutCenterText" style="font-size: 0.9rem;">Category</div>
-                    <div class="center-sub" id="donutCenterSub" style="font-size: 0.75rem;">Loading...</div>
+                    <div
+                      class="center-sub"
+                      id="donutCenterSub"
+                      style="font-size: 0.75rem"
+                    >
+                      Loading...
+                    </div>
                   </div>
                 </div>
-                <div class="category-list" id="dashCategoryList" style="width: 100%; max-height: 250px; overflow-y: auto;">
+                <div
+                  class="category-list"
+                  id="dashCategoryList"
+                  style="width: 100%; max-height: 250px; overflow-y: auto"
+                >
                   <!-- Category items will be injected here -->
                 </div>
               </div>
@@ -493,19 +553,31 @@
           <div class="filter-section animate-fade-in">
             <div class="filter-group">
               <label class="filter-label">Subject</label>
-              <select id="filterSubject" class="filter-select" onchange="handleAdvancedFilter()">
+              <select
+                id="filterSubject"
+                class="filter-select"
+                onchange="handleAdvancedFilter()"
+              >
                 <option value="">All Subjects</option>
               </select>
             </div>
             <div class="filter-group">
               <label class="filter-label">Year</label>
-              <select id="filterYear" class="filter-select" onchange="handleAdvancedFilter()">
+              <select
+                id="filterYear"
+                class="filter-select"
+                onchange="handleAdvancedFilter()"
+              >
                 <option value="">All Years</option>
               </select>
             </div>
             <div class="filter-group">
               <label class="filter-label">Availability</label>
-              <select id="filterAvailability" class="filter-select" onchange="handleAdvancedFilter()">
+              <select
+                id="filterAvailability"
+                class="filter-select"
+                onchange="handleAdvancedFilter()"
+              >
                 <option value="">All Statuses</option>
                 <option value="available">Available</option>
                 <option value="borrowed">Borrowed</option>
@@ -513,13 +585,21 @@
             </div>
             <div class="filter-group">
               <label class="filter-label">Faculty Rec</label>
-              <select id="filterFacultyRec" class="filter-select" onchange="handleAdvancedFilter()">
+              <select
+                id="filterFacultyRec"
+                class="filter-select"
+                onchange="handleAdvancedFilter()"
+              >
                 <option value="">All Books</option>
                 <option value="yes">Recommended</option>
               </select>
             </div>
-            <div class="filter-group" style="justify-content: flex-end;">
-              <button class="btn-secondary" style="padding: 8px 12px; font-size: 0.8rem;" onclick="resetAdvancedFilters()">
+            <div class="filter-group" style="justify-content: flex-end">
+              <button
+                class="btn-secondary"
+                style="padding: 8px 12px; font-size: 0.8rem"
+                onclick="resetAdvancedFilters()"
+              >
                 <i class="fas fa-rotate-left"></i> Reset
               </button>
             </div>
@@ -621,39 +701,110 @@
             </select>
           </div>
           <div id="facultyOnlyFields">
-            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div
+              class="form-row"
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px"
+            >
               <div class="form-group">
                 <label class="form-label">ISBN</label>
-                <input type="text" id="itemISBN" class="form-input" placeholder="e.g. 978-3-16-148410-0" />
+                <input
+                  type="text"
+                  id="itemISBN"
+                  class="form-input"
+                  placeholder="e.g. 978-3-16-148410-0"
+                />
               </div>
               <div class="form-group">
                 <label class="form-label">Publication Year</label>
-                <input type="number" id="itemYear" class="form-input" placeholder="e.g. 2024" />
+                <input
+                  type="number"
+                  id="itemYear"
+                  class="form-input"
+                  placeholder="e.g. 2024"
+                />
               </div>
             </div>
-            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div
+              class="form-row"
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px"
+            >
               <div class="form-group">
                 <label class="form-label">Department</label>
-                <input type="text" id="itemDept" class="form-input" placeholder="e.g. Computer Science" />
+                <input
+                  type="text"
+                  id="itemDept"
+                  class="form-input"
+                  placeholder="e.g. Computer Science"
+                />
               </div>
               <div class="form-group">
                 <label class="form-label">Subject</label>
-                <input type="text" id="itemSubject" class="form-input" placeholder="e.g. Programming" />
+                <input
+                  type="text"
+                  id="itemSubject"
+                  class="form-input"
+                  placeholder="e.g. Programming"
+                />
               </div>
             </div>
             <div class="form-group">
               <label class="form-label">Keywords</label>
-              <input type="text" id="itemKeywords" class="form-input" placeholder="e.g. logic, algorithms, coding" />
+              <input
+                type="text"
+                id="itemKeywords"
+                class="form-input"
+                placeholder="e.g. logic, algorithms, coding"
+              />
             </div>
             <div class="form-group">
-                <div class="form-group" style="grid-column: span 2; display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
-                  <input type="checkbox" id="itemRestricted" style="width: 18px; height: 18px; cursor: pointer;">
-                  <label for="itemRestricted" style="margin: 0; cursor: pointer; font-weight: 600;">Restricted Access (Requires approval for students)</label>
-                </div>
-                <div class="form-group" style="grid-column: span 2; display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
-                  <input type="checkbox" id="itemFacultyRec" style="width: 18px; height: 18px; cursor: pointer;">
-                  <label for="itemFacultyRec" style="margin: 0; cursor: pointer; font-weight: 600;">Faculty Recommended</label>
-                </div>
+              <div
+                class="form-group"
+                style="
+                  grid-column: span 2;
+                  display: flex;
+                  align-items: center;
+                  gap: 10px;
+                  background: rgba(255, 255, 255, 0.05);
+                  padding: 12px;
+                  border-radius: 8px;
+                  border: 1px solid var(--border-color);
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="itemRestricted"
+                  style="width: 18px; height: 18px; cursor: pointer"
+                />
+                <label
+                  for="itemRestricted"
+                  style="margin: 0; cursor: pointer; font-weight: 600"
+                  >Restricted Access (Requires approval for students)</label
+                >
+              </div>
+              <div
+                class="form-group"
+                style="
+                  grid-column: span 2;
+                  display: flex;
+                  align-items: center;
+                  gap: 10px;
+                  background: rgba(255, 255, 255, 0.05);
+                  padding: 12px;
+                  border-radius: 8px;
+                  border: 1px solid var(--border-color);
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="itemFacultyRec"
+                  style="width: 18px; height: 18px; cursor: pointer"
+                />
+                <label
+                  for="itemFacultyRec"
+                  style="margin: 0; cursor: pointer; font-weight: 600"
+                  >Faculty Recommended</label
+                >
+              </div>
             </div>
           </div>
           <div
@@ -723,15 +874,26 @@
     </div>
 
     <div id="requestAccessModal" class="confirm-overlay hidden">
-      <div class="confirm-card animate-fade-in" style="text-align: center;">
-        <div class="confirm-icon-wrap" style="background: rgba(14, 165, 233, 0.16); color: #38bdf8; margin: 0 auto 16px auto;">
+      <div class="confirm-card animate-fade-in" style="text-align: center">
+        <div
+          class="confirm-icon-wrap"
+          style="
+            background: rgba(14, 165, 233, 0.16);
+            color: #38bdf8;
+            margin: 0 auto 16px auto;
+          "
+        >
           <i class="fas fa-circle-question"></i>
         </div>
-        <h3 class="confirm-title" style="text-align: center;">Request Access</h3>
-        <p id="requestAccessMessage" class="confirm-message" style="text-align: center; margin-bottom: 24px;">
+        <h3 class="confirm-title" style="text-align: center">Request Access</h3>
+        <p
+          id="requestAccessMessage"
+          class="confirm-message"
+          style="text-align: center; margin-bottom: 24px"
+        >
           Are you sure you want to request access to this book?
         </p>
-        <div class="confirm-actions" style="justify-content: center;">
+        <div class="confirm-actions" style="justify-content: center">
           <button
             type="button"
             class="confirm-btn cancel"
@@ -742,7 +904,10 @@
           <button
             type="button"
             class="confirm-btn danger"
-            style="background: #0ea5e9; box-shadow: 0 8px 18px rgba(14, 165, 233, 0.35);"
+            style="
+              background: #0ea5e9;
+              box-shadow: 0 8px 18px rgba(14, 165, 233, 0.35);
+            "
             onclick="confirmRequestAccess()"
           >
             Confirm Request
@@ -761,25 +926,42 @@
             <h3 id="pdfBookTitle" class="pdf-modal-title">Book Title</h3>
           </div>
           <div class="pdf-header-controls">
-             <button id="pdfBtnHighlight" class="pdf-btn" onclick="toggleHighlightMode()" title="Toggle Highlight Mode">
-               <i class="fas fa-highlighter"></i>
-             </button>
-             <button id="pdfBtnBookmark" class="pdf-btn" onclick="bookmarkCurrentPage()" title="Bookmark Page">
-               <i class="fas fa-bookmark"></i>
-             </button>
-             <div class="pdf-pagination">
-               <button onclick="changePdfPage(-1)" class="pdf-btn"><i class="fas fa-chevron-left"></i></button>
-               <span class="pdf-page-info">Page <span id="pdfPageNum">1</span> of <span id="pdfPageCount">--</span></span>
-               <button onclick="changePdfPage(1)" class="pdf-btn"><i class="fas fa-chevron-right"></i></button>
-             </div>
-             <button onclick="closePDFReader()" class="pdf-btn pdf-btn-close">
-               <i class="fas fa-times"></i>
-             </button>
+            <button
+              id="pdfBtnHighlight"
+              class="pdf-btn"
+              onclick="toggleHighlightMode()"
+              title="Toggle Highlight Mode"
+            >
+              <i class="fas fa-highlighter"></i>
+            </button>
+            <button
+              id="pdfBtnBookmark"
+              class="pdf-btn"
+              onclick="bookmarkCurrentPage()"
+              title="Bookmark Page"
+            >
+              <i class="fas fa-bookmark"></i>
+            </button>
+            <div class="pdf-pagination">
+              <button onclick="changePdfPage(-1)" class="pdf-btn">
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              <span class="pdf-page-info"
+                >Page <span id="pdfPageNum">1</span> of
+                <span id="pdfPageCount">--</span></span
+              >
+              <button onclick="changePdfPage(1)" class="pdf-btn">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+            <button onclick="closePDFReader()" class="pdf-btn pdf-btn-close">
+              <i class="fas fa-times"></i>
+            </button>
           </div>
         </div>
         <div class="pdf-modal-body" id="pdfContainer">
-           <canvas id="pdfCanvas"></canvas>
-           <div id="pdfHighlightsLayer" class="pdf-highlights-layer"></div>
+          <canvas id="pdfCanvas"></canvas>
+          <div id="pdfHighlightsLayer" class="pdf-highlights-layer"></div>
         </div>
       </div>
     </div>
@@ -801,9 +983,9 @@
     <script src="src/js/utils/spawnBooks.js"></script>
     <script src="src/js/utils/loginAnimations.js"></script>
 
-    <script src="faculty/javascript/faculty.js"></script>
-    <script src="student/javascript/student.js"></script>
+    <script src="frontend/faculty/javascript/faculty.js"></script>
+    <script src="frontend/student/javascript/student.js"></script>
     <script src="src/js/main.js"></script>
-    <script src="faculty/javascript/reports.js"></script>
+    <script src="frontend/faculty/javascript/reports.js"></script>
   </body>
 </html>

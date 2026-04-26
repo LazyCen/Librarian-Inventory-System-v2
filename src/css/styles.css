@@ -585,6 +585,11 @@ body {
     cursor: pointer;
 }
 
+.filter-select option {
+    background: #0f2a43;
+    color: var(--text-main);
+}
+
 .filter-select:focus {
     border-color: var(--primary);
 }
@@ -1195,19 +1200,21 @@ body {
 }
 
 .stats-card {
-    background-color: var(--bg-white);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border-color);
-    border-radius: 14px;
-    padding: 16px;
-    transition: all 0.3s ease;
+    border-radius: 16px;
+    padding: 18px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     display: flex;
     flex-direction: column;
-    gap: 12px;
-}
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
     justify-content: space-between;
-    height: 120px;
+    min-height: 120px;
+}
     transition: transform 0.2s;
 }
 
@@ -1230,6 +1237,17 @@ body {
     color: var(--text-secondary);
     font-weight: 600;
     font-size: 0.95rem;
+}
+
+.stats-card-icon {
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
 }
 
 .stats-icon {
@@ -1852,12 +1870,39 @@ body {
         order: 2;
     }
 
-    .stats-grid {
-        grid-template-columns: 1fr;
+    .role-student .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .role-student .stats-card:nth-child(4) {
+        /* Since bin status is hidden for students, Recent Adds is technically child 4 in HTML but child 3 visible. */
+        /* Wait, dashBinStatusCard is child 3 in HTML. */
+        grid-column: span 2;
+    }
+
+    .stats-card {
+        padding: 14px;
+        min-height: 100px;
+    }
+
+    .stats-number {
+        font-size: 1.4rem;
+    }
+
+    .stats-label {
+        font-size: 0.75rem;
+    }
+
+    .stats-card-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
     }
 
     .bins-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
     }
 
     .chart-content {
@@ -1873,6 +1918,20 @@ body {
     .dashboard-header {
         flex-direction: column;
         align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .dash-borrowed-item, .dash-returned-item {
+        padding: 14px;
+        gap: 12px;
+    }
+
+    .dash-borrowed-id, .dash-returned-id {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        font-size: 0.8rem;
     }
 
     .modal-content {

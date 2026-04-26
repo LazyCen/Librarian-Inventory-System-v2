@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
 
     <link rel="stylesheet" href="admin.css" />
@@ -24,6 +25,7 @@
 
     <!-- ===== MAIN ADMIN APP ===== -->
     <div id="admin-app" class="admin-app">
+      <div id="sidebarOverlay" class="sidebar-mobile-overlay hidden"></div>
 
       <!-- ===== SIDEBAR ===== -->
       <aside class="admin-sidebar" id="adminSidebar">
@@ -32,6 +34,7 @@
             <span class="brand-title">Admin Panel</span>
             <span class="brand-sub">Librarian System</span>
           </div>
+          <button class="mobile-close-btn" id="mobileClose" aria-label="Close Sidebar"><i class="fas fa-times"></i></button>
         </div>
 
         <nav class="sidebar-nav">
@@ -72,8 +75,8 @@
 
         <!-- Top Bar -->
         <header class="admin-topbar">
-          <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileSidebar()">
-            ☰
+          <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle Navigation">
+            <i class="fas fa-bars-staggered"></i>
           </button>
           <div class="topbar-title">
             <h2 id="topbarTitle">Overview</h2>
@@ -548,8 +551,6 @@
       </div>
     </div>
 
-    <!-- Sidebar mobile overlay -->
-    <div id="sidebarOverlay" class="sidebar-mobile-overlay hidden" onclick="toggleMobileSidebar()"></div>
 
     <script src="admin.js"></script>
   </body>

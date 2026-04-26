@@ -127,6 +127,10 @@ function goBackToRoleSelection() {
  */
 function applyRoleRestrictions(role) {
     const isStudent = role === 'Student';
+    
+    // Set role-based classes on body for CSS targeting
+    document.body.classList.remove('role-student', 'role-faculty');
+    document.body.classList.add(isStudent ? 'role-student' : 'role-faculty');
 
     // Register Book button
     const registerBtn = document.getElementById('registerBookBtn');
@@ -140,10 +144,21 @@ function applyRoleRestrictions(role) {
         binsNav.style.display = isStudent ? 'none' : '';
     }
 
-    // If a student somehow navigates to the bins view, redirect to dashboard
+    // Reading History sidebar nav item
+    const historyNav = document.getElementById('navHistory');
+    if (historyNav) {
+        historyNav.style.display = isStudent ? '' : 'none';
+    }
+
+    // If a faculty tries to access history, or student tries to access bins, redirect
     if (isStudent) {
         const binsView = document.getElementById('view-bins');
         if (binsView && !binsView.classList.contains('hidden')) {
+            if (typeof switchView === 'function') switchView('dashboard');
+        }
+    } else {
+        const historyView = document.getElementById('view-history');
+        if (historyView && !historyView.classList.contains('hidden')) {
             if (typeof switchView === 'function') switchView('dashboard');
         }
     }

@@ -155,10 +155,14 @@ function getInventoryStats() {
 function switchView(view) {
     console.log(`Switching to ${view} view`);
 
-    // Students cannot access the Bins view — redirect silently to dashboard
+    // Role-based view restrictions
     const currentRole = localStorage.getItem('lisCurrentRole');
     if (view === 'bins' && currentRole === 'Student') {
         console.warn('Student role: Bins Status view is restricted. Redirecting to dashboard.');
+        view = 'dashboard';
+    }
+    if (view === 'history' && currentRole === 'Faculty') {
+        console.warn('Faculty role: Reading History view is restricted. Redirecting to dashboard.');
         view = 'dashboard';
     }
 

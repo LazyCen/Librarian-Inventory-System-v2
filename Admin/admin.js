@@ -110,11 +110,31 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('approveCustomDateWrap').classList.toggle('hidden', expSel.value !== 'custom');
     });
   }
-  // Close modals on overlay click
-  ['approveModal','rejectModal','bookFormModal'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener('click', e => { if (e.target === el) closeModal(id); });
-  });
+  // Navigation Toggle
+  const toggleBtn = document.getElementById('mobileToggle');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleMobileSidebar();
+    });
+  }
+
+  // Sidebar Close Button (Mobile)
+  const closeBtn = document.getElementById('mobileClose');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleMobileSidebar();
+    });
+  }
+
+  // Sidebar Overlay (Mobile)
+  const overlay = document.getElementById('sidebarOverlay');
+  if (overlay) {
+    overlay.addEventListener('click', () => {
+      closeMobileSidebar();
+    });
+  }
 
   refreshAll();
 });
@@ -151,19 +171,42 @@ function switchSection(name) {
 }
 
 // --- MOBILE SIDEBAR ---
+// --- SIDEBAR TOGGLE ---
 function toggleMobileSidebar() {
   const sb = document.getElementById('adminSidebar');
   const ov = document.getElementById('sidebarOverlay');
-  const isOpen = sb.classList.contains('open');
-  sb.classList.toggle('open', !isOpen);
-  ov.classList.toggle('active', !isOpen);
-  ov.classList.toggle('hidden', isOpen);
+  const body = document.body;
+  const isMobile = window.innerWidth <= 900;
+  
+  if (isMobile) {
+    const isOpen = sb.classList.contains('open');
+    if (!isOpen) {
+      sb.classList.add('open');
+      if (ov) {
+        ov.classList.add('active');
+        ov.classList.remove('hidden');
+      }
+    } else {
+      sb.classList.remove('open');
+      if (ov) {
+        ov.classList.remove('active');
+        ov.classList.add('hidden');
+      }
+    }
+  } else {
+    // Desktop: Toggle collapsed state
+    body.classList.toggle('sidebar-collapsed');
+  }
 }
+
 function closeMobileSidebar() {
-  document.getElementById('adminSidebar').classList.remove('open');
+  const sb = document.getElementById('adminSidebar');
   const ov = document.getElementById('sidebarOverlay');
-  ov.classList.remove('active');
-  ov.classList.add('hidden');
+  if (sb) sb.classList.remove('open');
+  if (ov) {
+    ov.classList.remove('active');
+    ov.classList.add('hidden');
+  }
 }
 
 // --- REFRESH ALL ---
@@ -406,17 +449,17 @@ function renderRequests() {
         <button class="tbl-btn danger" onclick="deleteRequest('${esc(id)}')"><i class="fas fa-trash"></i></button>`;
     }
     return `<tr>
-      <td style="font-weight:700;color:var(--text-muted);font-size:.78rem">${r.id||id}</td>
-      <td><div style="display:flex;align-items:center;gap:8px">
+      <td data-label="ID" style="font-weight:700;color:var(--text-muted);font-size:.78rem">${r.id||id}</td>
+      <td data-label="Student"><div style="display:flex;align-items:center;justify-content:flex-end;gap:8px">
         <div style="width:28px;height:28px;border-radius:50%;background:${avatarColor(r.studentId)};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.7rem;color:#fff;flex-shrink:0">${initials('',r.studentId)}</div>
         <span style="font-weight:600">${r.studentId||'—'}</span>
       </div></td>
-      <td style="font-weight:600">${r.bookTitle||'—'}</td>
-      <td>${reqStatusBadge(r.status)}</td>
-      <td style="color:var(--text-muted)">${fmtDate(r.dateRequested)}</td>
-      <td style="color:var(--text-muted)">${expires}</td>
-      <td style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${(r.remarks||'').replace(/"/g,'&quot;')}">${remarks}</td>
-      <td><div class="tbl-actions">${actions}</div></td>
+      <td data-label="Book Title" style="font-weight:600">${r.bookTitle||'—'}</td>
+      <td data-label="Status">${reqStatusBadge(r.status)}</td>
+      <td data-label="Requested" style="color:var(--text-muted)">${fmtDate(r.dateRequested)}</td>
+      <td data-label="Expires" style="color:var(--text-muted)">${expires}</td>
+      <td data-label="Remarks" style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${(r.remarks||'').replace(/"/g,'&quot;')}">${remarks}</td>
+      <td data-label="Actions"><div class="tbl-actions">${actions}</div></td>
     </tr>`;
   }).join('');
 }
@@ -568,24 +611,24 @@ function renderUsers() {
     const toggleIcon = isActive ? 'fa-user-slash' : 'fa-user-check';
 
     return `<tr${!isActive ? ' style="opacity:.55"' : ''}>
-      <td>
-        <div style="display:flex;align-items:center;gap:10px">
+      <td data-label="Name">
+        <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px">
           <div style="width:34px;height:34px;border-radius:50%;background:${avatarColor(u.email)};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;color:#fff;flex-shrink:0">${initials(u.fullName,u.email)}</div>
           <span style="font-weight:600">${u.fullName||'—'}</span>
         </div>
       </td>
-      <td style="color:var(--text-muted)">${u.email}</td>
-      <td>
+      <td data-label="Email" style="color:var(--text-muted)">${u.email}</td>
+      <td data-label="Role">
         <select class="role-select" onchange="changeUserRole('${esc(u.email)}', this.value)" ${!isActive ? 'disabled' : ''}>
           <option value="Faculty" ${role==='Faculty'?'selected':''}>Faculty</option>
           <option value="Student" ${role==='Student'?'selected':''}>Student</option>
         </select>
       </td>
-      <td><span class="status-badge ${isActive?'badge-approved':'badge-rejected'}">${isActive?'Active':'Inactive'}</span></td>
-      <td><span class="status-badge ${isOn?'badge-online':'badge-offline'}">${isOn?'Online':'Offline'}</span></td>
-      <td style="color:var(--text-muted);font-size:.82rem">${lastLogin}</td>
-      <td style="color:var(--text-muted)">${fmtDate(u.createdAt)}</td>
-      <td><div class="tbl-actions">
+      <td data-label="Status"><span class="status-badge ${isActive?'badge-approved':'badge-rejected'}">${isActive?'Active':'Inactive'}</span></td>
+      <td data-label="Online"><span class="status-badge ${isOn?'badge-online':'badge-offline'}">${isOn?'Online':'Offline'}</span></td>
+      <td data-label="Last Login" style="color:var(--text-muted);font-size:.82rem">${lastLogin}</td>
+      <td data-label="Joined" style="color:var(--text-muted)">${fmtDate(u.createdAt)}</td>
+      <td data-label="Actions"><div class="tbl-actions">
         <button class="tbl-btn" onclick="showUserDetail('${esc(u.email)}')"><i class="fas fa-eye"></i></button>
         <button class="tbl-btn" onclick="resetUserPassword('${esc(u.email)}')" title="Reset Password"><i class="fas fa-key"></i></button>
         <button class="tbl-btn ${toggleClass}" onclick="toggleUserActive('${esc(u.email)}')" title="${toggleLabel}"><i class="fas ${toggleIcon}"></i></button>
@@ -709,15 +752,15 @@ function renderBooks() {
     }
 
     return `<tr>
-      <td style="font-weight:700;color:var(--text-muted)">#${d.id||'?'}</td>
-      <td style="font-weight:600">${name}${d.pdfFileName ? ' <i class="fas fa-file-pdf" style="color:#f43f5e;font-size:.7rem" title="PDF attached"></i>' : ''}</td>
-      <td style="color:var(--text-muted)">${d.author||'—'}</td>
-      <td>${d.archived ? '<span class="status-badge badge-expired">Archived</span>' : statusBadge(d.bin)}</td>
-      <td style="max-width:160px">${tags}</td>
-      <td>${accessBadge(access)}</td>
-      <td>${popBar}</td>
-      <td style="color:var(--text-muted)">${fmtDate(d.dateAdded)}</td>
-      <td><div class="tbl-actions">${actions}</div></td>
+      <td data-label="ID" style="font-weight:700;color:var(--text-muted)">#${d.id||'?'}</td>
+      <td data-label="Title" style="font-weight:600">${name}${d.pdfFileName ? ' <i class="fas fa-file-pdf" style="color:#f43f5e;font-size:.7rem" title="PDF attached"></i>' : ''}</td>
+      <td data-label="Author" style="color:var(--text-muted)">${d.author||'—'}</td>
+      <td data-label="Status">${d.archived ? '<span class="status-badge badge-expired">Archived</span>' : statusBadge(d.bin)}</td>
+      <td data-label="Categories" style="max-width:160px">${tags}</td>
+      <td data-label="Access">${accessBadge(access)}</td>
+      <td data-label="Popularity">${popBar}</td>
+      <td data-label="Date Added" style="color:var(--text-muted)">${fmtDate(d.dateAdded)}</td>
+      <td data-label="Actions"><div class="tbl-actions">${actions}</div></td>
     </tr>`;
   }).join('');
 }

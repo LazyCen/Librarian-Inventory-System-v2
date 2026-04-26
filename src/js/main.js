@@ -176,7 +176,8 @@ function switchView(view) {
     const navMapping = {
         list: 'Books',
         bins: 'Bins Status',
-        dashboard: 'Dashboard'
+        dashboard: 'Dashboard',
+        history: 'Reading History'
     };
     const activeNavText = navMapping[view] || 'Inventory';
     document.querySelectorAll('.nav-item[data-view]').forEach(nav => {
@@ -222,6 +223,7 @@ function switchView(view) {
     if (view === 'bins' && typeof renderBinStatus === 'function') renderBinStatus();
     if (view === 'dashboard') renderDashboardView();
     if (view === 'requests') renderRequestsView();
+    if (view === 'history' && typeof renderReadingHistory === 'function') renderReadingHistory();
     
     // Auto-close mobile sidebar after switching
     toggleMobileSidebar(false);
@@ -597,9 +599,12 @@ function renderListView(itemsToRender = null, query = "", targetContainerId = 'i
 
         let restrictedActionHtml = '';
         if (isStudent) {
-            if (isApproved) {
-                restrictedActionHtml = `<div class="status-badge status-approved">
-                    <i class="fas fa-unlock"></i> Access Granted
+            if (!isRestricted || isApproved) {
+                restrictedActionHtml = `<div style="display:flex; flex-direction:column; gap:8px;">
+                    ${isRestricted ? `<div class="status-badge status-approved"><i class="fas fa-unlock"></i> Access Granted</div>` : ''}
+                    <button class="btn-primary" style="width: 100%; justify-content: center; background: #2563eb;" onclick="openPDFReader('${safeName}')">
+                        <i class="fas fa-book-reader"></i> Read Online
+                    </button>
                 </div>`;
             } else if (hasPendingRequest) {
                 restrictedActionHtml = `<div class="status-badge status-pending">
@@ -660,11 +665,12 @@ function renderListView(itemsToRender = null, query = "", targetContainerId = 'i
 
     if (typeof gsap !== 'undefined') {
         const cards = container.querySelectorAll('.item-card');
-        gsap.from(cards, {
+        const cardsToAnimate = Array.from(cards).slice(0, 30); // Optimize for large lists
+        gsap.from(cardsToAnimate, {
             duration: 0.6,
             y: 30,
             opacity: 0,
-            stagger: 0.08,
+            stagger: 0.05,
             ease: "back.out(1.2)",
             clearProps: "all"
         });

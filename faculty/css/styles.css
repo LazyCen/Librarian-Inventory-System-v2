@@ -143,6 +143,11 @@ body {
     color: #ffffff;
 }
 
+.nav-item:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: -2px;
+}
+
 .nav-item.active {
     background-color: #2563eb;
     color: #ffffff;
@@ -906,6 +911,11 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+.btn-primary:focus-visible, .btn-secondary:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
 }
 
 .btn-delete:hover {

@@ -292,12 +292,35 @@ function handleLogin(e) {
             return;
         }
 
+        // Account Status Check
+        if (matchedUser.active === false) {
+            setAuthNotice('Your account has been deactivated. Please contact the administrator.', 'error');
+            return;
+        }
+
         // Role Enforcement: Ensure the account role matches the selected access role
         const matchedUserRole = matchedUser.role || 'Faculty';
         if (matchedUserRole !== _pendingRole) {
             setAuthNotice(`Access Denied: This is a ${matchedUserRole} account.`, 'error');
             return;
         }
+
+        // Update User Metadata
+        matchedUser.lastLogin = new Date().toISOString();
+        saveStoredUsers(users);
+
+        // Record Login History
+        try {
+            const loginHistory = JSON.parse(localStorage.getItem('lisLoginHistory') || '[]');
+            loginHistory.unshift({
+                email: matchedUser.email,
+                action: 'login',
+                time: new Date().toISOString(),
+                ip: '127.0.0.1', // Mock IP for local system
+                device: 'Desktop Browser'
+            });
+            localStorage.setItem('lisLoginHistory', JSON.stringify(loginHistory.slice(0, 500))); // Keep last 500
+        } catch(e) {}
 
         // Persist the role so it survives future calls (e.g. from applyRoleRestrictions)
         const userRole = matchedUser.role || 'Faculty';

@@ -241,6 +241,15 @@
             <i class="fas fa-paper-plane"></i> Access Requests
             <span id="requestBadge" class="nav-badge hidden">0</span>
           </a>
+          <a
+            href="#"
+            class="nav-item"
+            id="navHistory"
+            data-view="history"
+            onclick="switchView('history')"
+          >
+            <i class="fas fa-history"></i> Reading History
+          </a>
         </nav>
 
         <div style="padding: 24px; margin-top: auto">
@@ -318,6 +327,17 @@
 
           <div id="requestsList" class="item-grid fade-in">
             <!-- Requests will be injected here -->
+          </div>
+        </div>
+
+        <!-- History View -->
+        <div id="view-history" class="view-content hidden">
+          <div class="view-header">
+            <h2 class="view-title">Reading History</h2>
+            <p class="view-subtitle">Track your reading progress and sessions</p>
+          </div>
+          <div id="historyList" class="history-list fade-in" style="display: flex; flex-direction: column; gap: 16px; margin-top: 20px;">
+            <!-- History items will be injected here -->
           </div>
         </div>
 
@@ -730,9 +750,41 @@
     <div id="sidebarOverlay" class="sidebar-overlay hidden"></div>
     <div id="messageBox" class="hidden"></div>
 
+    <div id="pdfReaderModal" class="pdf-modal-overlay hidden">
+      <div class="pdf-modal-content animate-fade-in">
+        <div class="pdf-modal-header">
+          <div class="pdf-header-left">
+            <h3 id="pdfBookTitle" class="pdf-modal-title">Book Title</h3>
+          </div>
+          <div class="pdf-header-controls">
+             <button id="pdfBtnHighlight" class="pdf-btn" onclick="toggleHighlightMode()" title="Toggle Highlight Mode">
+               <i class="fas fa-highlighter"></i>
+             </button>
+             <button id="pdfBtnBookmark" class="pdf-btn" onclick="bookmarkCurrentPage()" title="Bookmark Page">
+               <i class="fas fa-bookmark"></i>
+             </button>
+             <div class="pdf-pagination">
+               <button onclick="changePdfPage(-1)" class="pdf-btn"><i class="fas fa-chevron-left"></i></button>
+               <span class="pdf-page-info">Page <span id="pdfPageNum">1</span> of <span id="pdfPageCount">--</span></span>
+               <button onclick="changePdfPage(1)" class="pdf-btn"><i class="fas fa-chevron-right"></i></button>
+             </div>
+             <button onclick="closePDFReader()" class="pdf-btn pdf-btn-close">
+               <i class="fas fa-times"></i>
+             </button>
+          </div>
+        </div>
+        <div class="pdf-modal-body" id="pdfContainer">
+           <canvas id="pdfCanvas"></canvas>
+           <div id="pdfHighlightsLayer" class="pdf-highlights-layer"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- Scripts -->
     <!-- GSAP Animation Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <!-- PDF.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <!-- Utility Scripts -->
     <script src="src/js/utils/helpers.js"></script>

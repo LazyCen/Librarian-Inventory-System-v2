@@ -22,6 +22,7 @@
 
     <link rel="stylesheet" href="css/styles.css" />
     <link rel="stylesheet" href="css/auth.css" />
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js" as="script" />
 
   </head>
   <body>
@@ -258,16 +259,17 @@
       <main class="main-content">
         <!-- Header -->
         <header class="top-nav">
-          <button id="mobileMenuToggle" class="mobile-menu-toggle">
-            <i class="fas fa-bars"></i>
+          <button id="mobileMenuToggle" class="mobile-menu-toggle" aria-label="Open mobile menu" aria-expanded="false" aria-controls="sidebar">
+            <i class="fas fa-bars" aria-hidden="true"></i>
           </button>
           <div style="flex: 1" class="header-spacer"></div>
 
           <div class="search-bar">
-            <i class="fas fa-search"></i>
+            <i class="fas fa-search" aria-hidden="true"></i>
             <input
               type="text"
               id="searchQuery"
+              aria-label="Search by title or category"
               placeholder="Search by title or category..."
               onkeyup="handleSearch()"
             />
@@ -290,9 +292,10 @@
             <button
               id="filterBtn"
               class="btn-secondary"
+              aria-label="Sort books"
               onclick="cycleSortMode()"
             >
-              <i class="fas fa-arrow-down-short-wide"></i> Sort
+              <i class="fas fa-arrow-down-short-wide" aria-hidden="true"></i> Sort
             </button>
           </div>
         </div>
@@ -459,11 +462,7 @@
               >0 Titles</span
             >
           </div>
-          <div class="list-toolbar">
-            <button class="btn-secondary" onclick="switchView('dashboard')">
-              <i class="fas fa-chart-pie"></i> Back to Dashboard
-            </button>
-          </div>
+
 
           <!-- Advanced Filters -->
           <div class="filter-section animate-fade-in">
@@ -730,9 +729,41 @@
     <div id="sidebarOverlay" class="sidebar-overlay hidden"></div>
     <div id="messageBox" class="hidden"></div>
 
+    <div id="pdfReaderModal" class="pdf-modal-overlay hidden">
+      <div class="pdf-modal-content animate-fade-in">
+        <div class="pdf-modal-header">
+          <div class="pdf-header-left">
+            <h3 id="pdfBookTitle" class="pdf-modal-title">Book Title</h3>
+          </div>
+          <div class="pdf-header-controls">
+             <button id="pdfBtnHighlight" class="pdf-btn" aria-label="Toggle Highlight Mode" onclick="toggleHighlightMode()" title="Toggle Highlight Mode">
+               <i class="fas fa-highlighter" aria-hidden="true"></i>
+             </button>
+             <button id="pdfBtnBookmark" class="pdf-btn" aria-label="Bookmark Page" onclick="bookmarkCurrentPage()" title="Bookmark Page">
+               <i class="fas fa-bookmark" aria-hidden="true"></i>
+             </button>
+             <div class="pdf-pagination">
+               <button onclick="changePdfPage(-1)" class="pdf-btn" aria-label="Previous Page"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
+               <span class="pdf-page-info">Page <span id="pdfPageNum">1</span> of <span id="pdfPageCount">--</span></span>
+               <button onclick="changePdfPage(1)" class="pdf-btn" aria-label="Next Page"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
+             </div>
+             <button onclick="closePDFReader()" class="pdf-btn pdf-btn-close" aria-label="Close PDF Reader">
+               <i class="fas fa-times" aria-hidden="true"></i>
+             </button>
+          </div>
+        </div>
+        <div class="pdf-modal-body" id="pdfContainer">
+           <canvas id="pdfCanvas"></canvas>
+           <div id="pdfHighlightsLayer" class="pdf-highlights-layer"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- Scripts -->
     <!-- GSAP Animation Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <!-- PDF.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <!-- Utility Scripts -->
     <script src="../src/js/utils/helpers.js"></script>

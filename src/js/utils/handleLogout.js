@@ -12,6 +12,21 @@ function handleLogout() {
         localStorage.removeItem('lisCurrentRole');
         localStorage.removeItem('lisCurrentUser');
 
+        // Record Logout History
+        if (currentEmail) {
+            try {
+                const loginHistory = JSON.parse(localStorage.getItem('lisLoginHistory') || '[]');
+                loginHistory.unshift({
+                    email: currentEmail,
+                    action: 'logout',
+                    time: new Date().toISOString(),
+                    ip: '127.0.0.1',
+                    device: 'Desktop Browser'
+                });
+                localStorage.setItem('lisLoginHistory', JSON.stringify(loginHistory.slice(0, 500)));
+            } catch(e) {}
+        }
+
         // Reset UI to initial role selection state
         const mainApp = document.getElementById('main-app');
         const authSection = document.getElementById('auth-section');

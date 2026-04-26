@@ -258,16 +258,17 @@
       <main class="main-content">
         <!-- Header -->
         <header class="top-nav">
-          <button id="mobileMenuToggle" class="mobile-menu-toggle">
-            <i class="fas fa-bars"></i>
+          <button id="mobileMenuToggle" class="mobile-menu-toggle" aria-label="Open mobile menu" aria-expanded="false" aria-controls="sidebar">
+            <i class="fas fa-bars" aria-hidden="true"></i>
           </button>
           <div style="flex: 1" class="header-spacer"></div>
 
           <div class="search-bar">
-            <i class="fas fa-search"></i>
+            <i class="fas fa-search" aria-hidden="true"></i>
             <input
               type="text"
               id="searchQuery"
+              aria-label="Search by title or category"
               placeholder="Search by title or category..."
               onkeyup="handleSearch()"
             />
@@ -290,9 +291,10 @@
             <button
               id="filterBtn"
               class="btn-secondary"
+              aria-label="Sort books"
               onclick="cycleSortMode()"
             >
-              <i class="fas fa-arrow-down-short-wide"></i> Sort
+              <i class="fas fa-arrow-down-short-wide" aria-hidden="true"></i> Sort
             </button>
           </div>
         </div>
@@ -459,11 +461,7 @@
               >0 Titles</span
             >
           </div>
-          <div class="list-toolbar">
-            <button class="btn-secondary" onclick="switchView('dashboard')">
-              <i class="fas fa-chart-pie"></i> Back to Dashboard
-            </button>
-          </div>
+
 
           <!-- Advanced Filters -->
           <div class="filter-section animate-fade-in">

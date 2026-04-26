@@ -1958,3 +1958,45 @@ body {
     width: 100%;
     justify-content: center;
 }
+
+
+/* PDF Reader Styles */
+.pdf-modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.95); z-index: 9999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+.pdf-modal-overlay.hidden { display: none !important; }
+.pdf-modal-content { background: var(--bg-card); width: 95%; height: 95%; max-width: 1200px; border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border: 1px solid var(--border-color); }
+.pdf-modal-header { padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); background: var(--bg-card); }
+.pdf-header-left { display: flex; align-items: center; gap: 16px; }
+.pdf-modal-title { margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--text-main); }
+.pdf-header-controls { display: flex; align-items: center; gap: 16px; }
+.pdf-pagination { display: flex; align-items: center; gap: 12px; background: rgba(255, 255, 255, 0.05); padding: 4px 12px; border-radius: 8px; }
+.pdf-page-info { font-size: 0.9rem; font-weight: 500; color: var(--text-main); }
+.pdf-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); color: var(--text-main); width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease; }
+.pdf-btn:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2); }
+.pdf-btn.active { background: #3b82f6; border-color: #3b82f6; color: white; }
+.pdf-btn-close { background: rgba(239, 68, 68, 0.1); color: #ef4444; border-color: rgba(239, 68, 68, 0.2); }
+.pdf-btn-close:hover { background: #ef4444; color: white; border-color: #ef4444; }
+.pdf-modal-body { flex: 1; overflow: auto; display: flex; justify-content: center; background: #0f172a; padding: 24px; position: relative; }
+#pdfContainer { position: relative; }
+#pdfCanvas { max-width: 100%; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border-radius: 4px; }
+.pdf-highlights-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+.pdf-highlight-rect { position: absolute; background-color: rgba(250, 204, 21, 0.4); mix-blend-mode: multiply; pointer-events: auto; cursor: pointer; border-radius: 3px; }
+.pdf-highlight-rect:hover { background-color: rgba(250, 204, 21, 0.6); }
+
+/* Prevent printing secure documents */
+@media print {
+  .pdf-modal-overlay, #pdfReaderModal {
+    display: none !important;
+  }
+  body * {
+    visibility: hidden;
+  }
+  body:after {
+    content: 'Printing is strictly prohibited for secure library documents.';
+    visibility: visible;
+    display: block;
+    font-size: 24px;
+    text-align: center;
+    margin-top: 50px;
+  }
+}
+

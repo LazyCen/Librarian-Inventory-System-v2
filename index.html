@@ -239,7 +239,7 @@
             data-view="dashboard"
             onclick="switchView('dashboard')"
           >
-            <i class="fas fa-th-large"></i> Dashboard
+            <span class="dashboard-text">Dashboard</span>
           </a>
           <a
             href="#"
@@ -248,7 +248,7 @@
             data-view="bins"
             onclick="switchView('bins')"
           >
-            <i class="fas fa-boxes-stacked"></i> Bins Status
+            Containers
           </a>
           <a
             href="#"
@@ -256,7 +256,7 @@
             data-view="list"
             onclick="showAllItems()"
           >
-            <i class="fas fa-book"></i> Books Catalog
+            Books
           </a>
           <a
             href="#"
@@ -265,7 +265,7 @@
             data-view="requests"
             onclick="switchView('requests')"
           >
-            <i class="fas fa-paper-plane"></i> Access Requests
+            Access Requests
             <span id="requestBadge" class="nav-badge hidden">0</span>
           </a>
           <a
@@ -275,7 +275,7 @@
             data-view="history"
             onclick="switchView('history')"
           >
-            <i class="fas fa-history"></i> Reading History
+           Reading History
           </a>
         </nav>
 
@@ -323,8 +323,7 @@
         <!-- Dashboard Title -->
         <div class="dashboard-header">
           <div class="page-title">
-            <i class="fas fa-book-open-reader"></i>
-            <span id="currentViewTitle">Dashboard</span>
+            <span id="currentViewTitle">Home</span>
           </div>
           <div class="filter-actions">
             <button
@@ -395,7 +394,7 @@
             <!-- Total Books -->
             <div class="stats-card">
               <div class="stats-header">
-                <span>Total Titles</span>
+                <span>Total Books</span>
               </div>
               <div class="stats-body">
                 <div>
@@ -419,7 +418,7 @@
             <!-- Total Bins -->
             <div class="stats-card" id="dashBinStatusCard">
               <div class="stats-header">
-                <span>Bin Status</span>
+                <span>Container Status</span>
               </div>
               <div class="stats-body">
                 <div>
@@ -441,6 +440,7 @@
               </div>
             </div>
           </div>
+
 
           <!-- Quick Actions -->
           <div class="librarian-panel" style="margin-top: 24px">
@@ -545,7 +545,7 @@
           </div>
           <div class="list-toolbar">
             <button class="btn-secondary" onclick="switchView('dashboard')">
-              <i class="fas fa-chart-pie"></i> Back to Dashboard
+              Back to <span class="dashboard-text">Dashboard</span>
             </button>
           </div>
 
@@ -684,7 +684,7 @@
             />
           </div>
           <div class="form-group">
-            <label class="form-label">Bin Status</label>
+            <label class="form-label">Container</label>
             <select
               id="itemBinSelection"
               class="form-input"
@@ -706,7 +706,9 @@
               style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px"
             >
               <div class="form-group">
-                <label class="form-label">ISBN</label>
+                <label class="form-label"
+                  >International Standard Book Number(ISBN)</label
+                >
                 <input
                   type="text"
                   id="itemISBN"
@@ -734,7 +736,7 @@
                   type="text"
                   id="itemDept"
                   class="form-input"
-                  placeholder="e.g. Computer Science"
+                  placeholder="e.g. CST, CBM"
                 />
               </div>
               <div class="form-group">
@@ -743,7 +745,7 @@
                   type="text"
                   id="itemSubject"
                   class="form-input"
-                  placeholder="e.g. Programming"
+                  placeholder="e.g. CS01 , CS06"
                 />
               </div>
             </div>

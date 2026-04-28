@@ -11,7 +11,7 @@
  *
  * Student restrictions:
  *  - "Register Book" button is hidden
- *  - "Bins Status" sidebar item is hidden
+ *  - "Containers Status" sidebar item is hidden
  *
  * @param {Event} e - The event object triggered by form submission or button click.
  */
@@ -138,7 +138,7 @@ function applyRoleRestrictions(role) {
         registerBtn.style.display = isStudent ? 'none' : '';
     }
 
-    // Bins Status sidebar nav item
+    // Containers Status sidebar nav item
     const binsNav = document.getElementById('navBinsStatus');
     if (binsNav) {
         binsNav.style.display = isStudent ? 'none' : '';
@@ -150,7 +150,7 @@ function applyRoleRestrictions(role) {
         historyNav.style.display = isStudent ? '' : 'none';
     }
 
-    // If a faculty tries to access history, or student tries to access bins, redirect
+    // If a faculty tries to access history, or student tries to access containers, redirect
     if (isStudent) {
         const binsView = document.getElementById('view-bins');
         if (binsView && !binsView.classList.contains('hidden')) {
@@ -340,6 +340,7 @@ function handleLogin(e) {
         // Persist the role so it survives future calls (e.g. from applyRoleRestrictions)
         const userRole = matchedUser.role || 'Faculty';
         localStorage.setItem(CURRENT_ROLE_KEY, userRole);
+        localStorage.setItem('lisCurrentUser', matchedUser.email);
 
         clearAuthNotice();
         // Mark this user as online in the Users panel

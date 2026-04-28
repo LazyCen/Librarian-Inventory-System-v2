@@ -118,7 +118,7 @@ function handleAddItem(e) {
             isRestricted: itemRestricted,
             dateAdded: new Date().toISOString()
         };
-        showMessage(`Catalog updated: '${itemName}' (#${newId}) marked as ${assignedBin}`, 'success');
+        showMessage(`Catalog updated: '${itemName}' (#${newId}) placed in ${assignedBin} container`, 'success');
     }
 
     StorageManager.saveInventory(inventory);
@@ -219,13 +219,9 @@ function renderBinStatus() {
             ? Object.values(inventory).filter(item => InventoryHelpers.getEffectiveBin(item) !== 'Added').length 
             : Object.values(inventory).filter(item => InventoryHelpers.getEffectiveBin(item) === bin).length;
 
-        let iconStr = '<i class="fas fa-box"></i>';
-        if (bin === 'Added') iconStr = '<i class="fas fa-plus-circle"></i>';
-        if (bin === 'Borrowed') iconStr = '<i class="fas fa-hand-holding-hand"></i>';
-        if (bin === 'Returned') iconStr = '<i class="fas fa-undo"></i>';
-        if (bin === 'Books') iconStr = '<i class="fas fa-book-open"></i>';
+        let iconStr = '';
 
-        const titleText = isBooksBin ? 'Books' : `${bin} Books`;
+        const titleText = isBooksBin ? 'Books' : `${bin} Container`;
 
         return `
             <div class="bin-card" onclick="filterByBin('${bin}')">

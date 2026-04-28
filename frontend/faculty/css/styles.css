@@ -51,10 +51,15 @@ body {
     height: 100vh;
     margin: 0;
     background-color: #0f2a43;
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(244, 63, 94, 0.1) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(52, 211, 153, 0.1) 0px, transparent 50%);
     background-attachment: fixed;
     color: var(--text-main);
     overflow-x: hidden;
 }
+
 
 #auth-section {
     background: transparent !important;
@@ -1194,27 +1199,92 @@ body {
 /* --- Dashboard Specific --- */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 14px;
-    margin-bottom: 16px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
 }
 
+/* Ensure the layout is 4 columns on large desktops for Faculty */
+@media screen and (min-width: 1024px) {
+    .role-faculty .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Student Layout Organization (3 cards: 2 on top, 1 on bottom) */
+.role-student .stats-card:nth-child(4) {
+    grid-column: span 2;
+}
+
+/* Hide Bin Status for Students */
+.role-student #dashBinStatusCard {
+    display: none !important;
+}
+
+
 .stats-card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 18px;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    border-radius: 20px;
+    padding: 20px;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
     position: relative;
     overflow: hidden;
     justify-content: space-between;
-    min-height: 120px;
+    min-height: 130px;
+    box-shadow: var(--shadow-sm);
 }
+
+/* Faculty Specific Premium Decorations */
+.role-faculty .stats-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--primary);
+    opacity: 0.8;
+}
+
+/* Hide icons for students */
+.role-student .stats-card-icon {
+    display: none;
+}
+
+/* Student Specific Reset (Previous Layout) */
+.role-student .stats-card {
+    border-radius: 16px;
+    padding: 18px;
+    min-height: 120px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: var(--shadow-card);
+}
+
+/* Color Variants for Stats Cards (Faculty Only) */
+.role-faculty .stats-card.card-books::before { background: #3b82f6; }
+.role-faculty .stats-card.card-books .stats-card-icon { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+
+.role-faculty .stats-card.card-categories::before { background: #10b981; }
+.role-faculty .stats-card.card-categories .stats-card-icon { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+
+.role-faculty .stats-card.card-bins::before { background: #f59e0b; }
+.role-faculty .stats-card.card-bins .stats-card-icon { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+
+.role-faculty .stats-card.card-recent::before { background: #f43f5e; }
+.role-faculty .stats-card.card-recent .stats-card-icon { background: rgba(244, 63, 94, 0.15); color: #f43f5e; }
+
     transition: transform 0.2s;
 }
 
@@ -1862,6 +1932,15 @@ body {
         order: 3;
     }
 
+    .dashboard-text {
+        font-size: 0;
+    }
+
+    .dashboard-text::after {
+        content: 'Home';
+        font-size: 0.85rem;
+    }
+
     .header-spacer {
         display: none;
     }
@@ -1870,21 +1949,17 @@ body {
         order: 2;
     }
 
-    .role-student .stats-grid {
+    .stats-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
-
-    .role-student .stats-card:nth-child(4) {
-        /* Since bin status is hidden for students, Recent Adds is technically child 4 in HTML but child 3 visible. */
-        /* Wait, dashBinStatusCard is child 3 in HTML. */
-        grid-column: span 2;
+        gap: 12px;
     }
 
     .stats-card {
-        padding: 14px;
-        min-height: 100px;
+        padding: 16px;
+        min-height: 110px;
     }
+
+
 
     .stats-number {
         font-size: 1.4rem;
@@ -1943,7 +2018,26 @@ body {
         padding: 10px 16px;
         font-size: 0.85rem;
     }
+
+    .librarian-actions {
+        display: flex;
+        overflow-x: auto;
+        padding: 4px 4px 12px;
+        gap: 12px;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .librarian-actions::-webkit-scrollbar {
+        display: none;
+    }
+
+    .librarian-actions button {
+        flex: 0 0 auto;
+        white-space: nowrap;
+    }
 }
+
 
 /* Very Small Devices */
 @media screen and (max-width: 480px) {

@@ -431,7 +431,6 @@ function renderReadingHistory() {
     if (books.length === 0) {
         container.innerHTML = `
             <div style="text-align: center; padding: 60px; color: var(--text-muted);">
-                <i class="fas fa-book-reader" style="font-size: 3rem; opacity: 0.2; margin-bottom: 16px;"></i>
                 <p>No reading history found. Start reading to see your progress here!</p>
             </div>
         `;
@@ -451,15 +450,15 @@ function renderReadingHistory() {
             <div class="item-card" style="display: flex; flex-direction: column; gap: 10px;">
                 <h4 class="card-title" style="margin-bottom: 0;">${book}</h4>
                 <div class="card-main-meta" style="margin-top: 8px;">
-                    <div class="card-meta"><i class="far fa-calendar"></i> Accessed: ${dateStr}</div>
-                    <div class="card-meta"><i class="far fa-clock"></i> Reading Time: ${timeStr}</div>
-                    <div class="card-meta"><i class="fas fa-layer-group"></i> Pages Visited: ${hist.pagesVisited.length}</div>
-                    <div class="card-meta"><i class="fas fa-bookmark"></i> Last Page: ${hist.lastPage}</div>
-                    <div class="card-meta"><i class="fas fa-history"></i> Sessions: ${hist.sessions}</div>
+                    <div class="card-meta">Accessed: ${dateStr}</div>
+                    <div class="card-meta">Reading Time: ${timeStr}</div>
+                    <div class="card-meta">Pages Visited: ${hist.pagesVisited.length}</div>
+                    <div class="card-meta">Last Page: ${hist.lastPage}</div>
+                    <div class="card-meta">Sessions: ${hist.sessions}</div>
                 </div>
                 <div class="card-footer" style="margin-top: 12px; padding-top: 16px; border-top: 1px solid var(--border-color);">
                     <button class="btn-primary" onclick="openPDFReader('${book.replace(/'/g, "\\'")}')">
-                        <i class="fas fa-book-reader"></i> Continue Reading
+                        Continue Reading
                     </button>
                 </div>
             </div>

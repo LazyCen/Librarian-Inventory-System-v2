@@ -10,6 +10,9 @@ function handleLogout() {
 
     localStorage.removeItem('lisCurrentRole');
     localStorage.removeItem('lisCurrentUser');
+    // Clear the refresh-detection flag so we don't accidentally restore the session after logout
+    sessionStorage.removeItem('lisPageRefreshing');
+
 
     // Hide app and show auth section
     const mainApp = document.getElementById('main-app');

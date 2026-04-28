@@ -1,3 +1,2 @@
-Click the link below ⇩⇩⇩⇩⇩
+Live Link: https://lazycen.github.io/Librarian-Inventory-System-v2/
 
-https://lazycen.github.io/Librarian-Inventory-System-v2/

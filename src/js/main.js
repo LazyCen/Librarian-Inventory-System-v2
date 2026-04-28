@@ -41,6 +41,30 @@ document.addEventListener('DOMContentLoaded', function () {
     populateFilterOptions();
     updateRequestBadge();
 
+    // Check for existing session to prevent jumping back to login on refresh.
+    // lisCurrentRole persists across refreshes; lisCurrentUser may be restored
+    // by users.js's initPresenceTracking() when it detects a refresh via sessionStorage.
+    const storedUser = localStorage.getItem('lisCurrentUser');
+    const storedRole = localStorage.getItem('lisCurrentRole');
+
+    // A valid session exists if we have a role stored (set only on login, cleared only on logout)
+    if (storedRole) {
+        console.log('Session detected. Restoring dashboard access...');
+        
+        const authSection = document.getElementById('auth-section');
+        const mainApp = document.getElementById('main-app');
+        const booksLayer = document.getElementById('booksLayer');
+
+        if (authSection) authSection.style.display = 'none';
+        if (booksLayer) booksLayer.style.display = 'none';
+        if (mainApp) mainApp.classList.remove('hidden');
+
+        // Apply role restrictions
+        if (typeof applyRoleRestrictions === 'function') {
+            applyRoleRestrictions(storedRole);
+        }
+    }
+
     // Set up form submission handler for adding items
     const addItemForm = document.getElementById('addItemForm');
     if (addItemForm) {
@@ -180,7 +204,7 @@ function switchView(view) {
     const navMapping = {
         list: 'Books',
         bins: 'Bins Status',
-        dashboard: 'Dashboard',
+        dashboard: window.innerWidth <= 768 ? 'Home' : 'Dashboard',
         history: 'Reading History'
     };
     const activeNavText = navMapping[view] || 'Inventory';
@@ -578,7 +602,7 @@ function renderListView(itemsToRender = null, query = "", targetContainerId = 'i
         }
 
         const facultyRecHtml = details.facultyRec 
-            ? `<div class="faculty-rec-badge"><i class="fas fa-thumbs-up"></i> Faculty Recommended</div>` 
+            ? `<div class="faculty-rec-badge">Faculty Recommended</div>` 
             : '';
 
         let statusBadge = '';
@@ -605,18 +629,18 @@ function renderListView(itemsToRender = null, query = "", targetContainerId = 'i
         if (isStudent) {
             if (!isRestricted || isApproved) {
                 restrictedActionHtml = `<div style="display:flex; flex-direction:column; gap:8px;">
-                    ${isRestricted ? `<div class="status-badge status-approved"><i class="fas fa-unlock"></i> Access Granted</div>` : ''}
+                    ${isRestricted ? `<div class="status-badge status-approved">Access Granted</div>` : ''}
                     <button class="btn-primary" style="width: 100%; justify-content: center; background: #2563eb;" onclick="openPDFReader('${safeName}')">
-                        <i class="fas fa-book-reader"></i> Read Online
+                        Read Online
                     </button>
                 </div>`;
             } else if (hasPendingRequest) {
                 restrictedActionHtml = `<div class="status-badge status-pending">
-                    <i class="fas fa-hourglass-half"></i> Request Pending
+                    Request Pending
                 </div>`;
             } else {
                 restrictedActionHtml = `<button class="btn-request" onclick="submitAccessRequest('${safeName}')">
-                    <i class="fas fa-paper-plane"></i> Request Access
+                    Request Access
                 </button>`;
             }
         }
@@ -639,11 +663,11 @@ function renderListView(itemsToRender = null, query = "", targetContainerId = 'i
                 ${authorHtml}
                 <div class="card-body-row">
                     <div class="card-main-meta">
-                        <div class="card-meta"><i class="far fa-calendar"></i> Added ${date}</div>
-                        ${details.year ? `<div class="card-meta"><i class="far fa-calendar-check"></i> Published: ${details.year}</div>` : ''}
-                        ${details.department ? `<div class="card-meta"><i class="fas fa-building-columns"></i> Dept: ${details.department}</div>` : ''}
-                        <div class="card-meta"><i class="fas fa-box"></i> Bin/Status: ${details.bin}</div>
-                        <div class="card-meta"><i class="fas fa-tags"></i> ${categoryCount} categories</div>
+                        <div class="card-meta">Added ${date}</div>
+                        ${details.year ? `<div class="card-meta">Published: ${details.year}</div>` : ''}
+                        ${details.department ? `<div class="card-meta">Dept: ${details.department}</div>` : ''}
+                        <div class="card-meta">Container/Status: ${details.bin}</div>
+                        <div class="card-meta">${categoryCount} categories</div>
                         ${actionHtml}
                     </div>
                     <div class="card-side-tags">
@@ -845,7 +869,7 @@ function filterByBin(bin) {
     const queryInput = document.getElementById('searchQuery');
     if (queryInput) queryInput.value = '';
     switchView('list'); renderListView(getFilteredEntries(), '');
-    showMessage(`Showing titles from ${bin}`, 'info', 1500);
+    showMessage(`Showing titles from container ${bin}`, 'info', 1500);
 }
 
 function renderRequestsView() {
@@ -878,7 +902,7 @@ function updateRequestBadge() {
     const isStudent = currentRole === 'Student';
     const currentUser = localStorage.getItem('lisCurrentUser') || localStorage.getItem('lisCurrentRole') || 'Anonymous Student';
     const label = isStudent ? 'Request' : 'Access Requests';
-    navItem.innerHTML = `<i class="fas fa-paper-plane"></i> ${label} <span id="requestBadge" class="nav-badge hidden">0</span>`;
+    navItem.innerHTML = `${label} <span id="requestBadge" class="nav-badge hidden">0</span>`;
     const newBadge = document.getElementById('requestBadge');
     let count = 0;
     if (isStudent) count = Object.values(requests).filter(r => r.studentId === currentUser && r.status !== 'Pending').length;

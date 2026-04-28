@@ -206,18 +206,59 @@ function renderUsersPanel() {
 /**
  * Sets up visibility + beforeunload listeners so the current user's
  * status is automatically toggled when they hide / close the tab.
+ *
+ * We use a sessionStorage flag ('lisPageRefreshing') to distinguish between
+ * a page REFRESH (tab stays alive → keep session) and a true tab CLOSE
+ * (session should end → mark offline).
+ *
+ * Flow:
+ *  - beforeunload  → set the flag, then mark offline (optimistic clear)
+ *  - DOMContentLoaded → if flag is set, it was a refresh → restore session
+ *                        then clear the flag
  */
 function initPresenceTracking() {
     const email = getCurrentUserEmail();
 
-    // Tab / window closed
+    // Tab / window closed or refreshed — mark offline optimistically
     window.addEventListener('beforeunload', () => {
         const cur = getCurrentUserEmail();
-        if (cur) setUserOffline(cur);
+        if (cur) {
+            // Set a flag so we can detect a refresh on next load
+            sessionStorage.setItem('lisPageRefreshing', '1');
+            setUserOffline(cur);
+        }
     });
 
-    // If a user was already session-active (e.g. page refresh), mark them online
-    if (email) {
+    // If we're coming back from a refresh, the sessionStorage flag will be set.
+    // Restore the online status and re-show the dashboard.
+    const isRefresh = sessionStorage.getItem('lisPageRefreshing') === '1';
+    if (isRefresh) {
+        sessionStorage.removeItem('lisPageRefreshing');
+        // The role and user were stored before beforeunload cleared them,
+        // but setUserOffline already removed CURRENT_USER_KEY.
+        // Re-read from the persisted role key and restore the session.
+        const storedRole = localStorage.getItem('lisCurrentRole');
+        const storedOnlineUsers = (() => {
+            try { return JSON.parse(localStorage.getItem(ONLINE_USERS_KEY) || '[]'); } catch { return []; }
+        })();
+        // Try to recover the email from the registered users list + role
+        const allUsers = (() => {
+            try { return JSON.parse(localStorage.getItem('lisAuthUsers') || '[]'); } catch { return []; }
+        })();
+        // Find the most recently logged-in user matching the stored role
+        const lastUser = allUsers
+            .filter(u => u.role === storedRole && u.lastLogin)
+            .sort((a, b) => new Date(b.lastLogin) - new Date(a.lastLogin))[0];
+
+        if (lastUser && storedRole) {
+            // Restore the session silently (set online without re-rendering login)
+            const set = getOnlineSet();
+            set.add(lastUser.email);
+            saveOnlineSet(set);
+            localStorage.setItem(CURRENT_USER_KEY, lastUser.email);
+        }
+    } else if (email) {
+        // Normal load where email was already present — mark online
         setUserOnline(email);
     }
 

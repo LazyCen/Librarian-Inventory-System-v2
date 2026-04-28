@@ -1862,6 +1862,15 @@ body {
         order: 3;
     }
 
+    .dashboard-text {
+        font-size: 0;
+    }
+
+    .dashboard-text::after {
+        content: 'Home';
+        font-size: 0.85rem;
+    }
+
     .header-spacer {
         display: none;
     }

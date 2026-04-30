@@ -36,3 +36,4 @@ logs/
 # Project specific
 QUICKSTART.txt
 Librarian_Inventory_Frontend_Flowchart.pdf
+package.json

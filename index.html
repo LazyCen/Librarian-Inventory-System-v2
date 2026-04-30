@@ -3,59 +3,60 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Librarian Inventory System</title>
+    <title>Librarian Inventory System — Bridge</title>
+    <meta http-equiv="refresh" content="0;url=frontend/index.html" />
     <style>
       body {
-        font-family: Arial, sans-serif;
         margin: 0;
-        padding: 2rem;
-        background: #f4f7fb;
-        color: #1f2937;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: #0f172a;
+        color: #e2e8f0;
+        font-family: Inter, Arial, sans-serif;
       }
-      main {
-        max-width: 640px;
-        margin: 0 auto;
+      .bridge {
+        text-align: center;
+        max-width: 34rem;
+        padding: 2rem 2.4rem;
+        border: 1px solid rgba(226, 232, 240, 0.14);
+        border-radius: 1rem;
+        background: rgba(15, 23, 42, 0.92);
+        box-shadow: 0 20px 55px rgba(15, 23, 42, 0.35);
       }
       h1 {
-        margin-bottom: 0.5rem;
+        margin: 0 0 1rem;
+        font-size: 1.75rem;
+        color: #f8fafc;
       }
       p {
-        margin-bottom: 1.5rem;
-        line-height: 1.6;
+        margin: 0 0 1rem;
+        line-height: 1.75;
+        color: #cbd5e1;
       }
       a {
-        color: #2563eb;
+        color: #38bdf8;
         text-decoration: none;
       }
       a:hover {
         text-decoration: underline;
       }
-      ul {
-        padding-left: 1.2rem;
-      }
-      li {
-        margin-bottom: 0.75rem;
-      }
     </style>
   </head>
   <body>
-    <main>
-      <h1>Librarian Inventory System</h1>
+    <div class="bridge">
+      <h1>Bridge to Frontend</h1>
       <p>
-        This is the default landing page for Live Server. Use the links below to
-        open the app sections.
+        This page exists only to connect Live Server to
+        <code>frontend/index.html</code>.
       </p>
-      <ul>
-        <li><a href="frontend/index.html" target="_blank">Frontend Home</a></li>
-        <li>
-          <a href="frontend/users/index.html" target="_blank"
-            >Users Dashboard</a
-          >
-        </li>
-        <li>
-          <a href="backend/admin/index.html" target="_blank">Admin Panel</a>
-        </li>
-      </ul>
-    </main>
+      <p>
+        If the redirect does not happen automatically,
+        <a href="frontend/index.html">click here to open the frontend</a>.
+      </p>
+    </div>
+    <script>
+      window.location.replace("frontend/index.html");
+    </script>
   </body>
 </html>

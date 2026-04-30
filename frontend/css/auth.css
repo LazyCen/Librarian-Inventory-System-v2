@@ -1,0 +1,284 @@
+/**
+ * auth.css — Authentication Page Styles
+ * Neumorphic Parallax UI · Librarian Inventory System
+ */
+
+/* ════════════════════════════════════════════
+   AUTH BODY
+   ════════════════════════════════════════════ */
+.auth-page {
+  min-height: 100vh;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 24px;
+}
+
+/* Neumorphic large floating orb backgrounds */
+.auth-page::before,
+.auth-page::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.auth-page::before {
+  width: 700px;
+  height: 700px;
+  top: -250px;
+  right: -200px;
+  background: radial-gradient(circle, rgba(79,125,219,0.09) 0%, transparent 65%);
+}
+.auth-page::after {
+  width: 500px;
+  height: 500px;
+  bottom: -150px;
+  left: -150px;
+  background: radial-gradient(circle, rgba(123,97,255,0.08) 0%, transparent 65%);
+}
+
+/* ════════════════════════════════════════════
+   FLOATING BOOKS LAYER (Parallax BG)
+   ════════════════════════════════════════════ */
+.books-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+.book {
+  position: absolute;
+  opacity: 0;
+  will-change: transform, opacity;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+}
+.book i { font-size: 100%; }
+
+/* ════════════════════════════════════════════
+   AUTH CARD (Neumorphic)
+   ════════════════════════════════════════════ */
+.auth-card {
+  background: var(--bg);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--neu-shadow-card);
+  border: 1px solid var(--border);
+  padding: 44px 40px;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  z-index: 10;
+  animation: authCardIn 0.7s var(--ease-spring) both;
+}
+
+@keyframes authCardIn {
+  from { opacity: 0; transform: translateY(32px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ════════════════════════════════════════════
+   AUTH HEADER
+   ════════════════════════════════════════════ */
+.auth-logo-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 30px;
+}
+
+.auth-logo-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  box-shadow: var(--neu-shadow-out);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.auth-system-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.25;
+  max-width: 150px;
+}
+
+/* ════════════════════════════════════════════
+   ROLE PICKER
+   ════════════════════════════════════════════ */
+.role-select-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.role-picker-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.role-picker-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 22px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--neu-shadow-out);
+  cursor: pointer;
+  transition:
+    box-shadow var(--dur-mid) var(--ease-out),
+    transform var(--dur-mid) var(--ease-out),
+    border-color var(--dur-mid);
+  font-family: var(--font-body);
+}
+.role-picker-btn:hover {
+  box-shadow: var(--neu-shadow-hover);
+  transform: translateY(-2px);
+  border-color: var(--primary);
+}
+.role-picker-btn.selected {
+  box-shadow: var(--neu-shadow-in);
+  border-color: var(--primary);
+  transform: translateY(0);
+}
+.role-icon {
+  width: 44px; height: 44px;
+  border-radius: var(--radius-sm);
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  box-shadow: var(--neu-shadow-sm);
+}
+.role-name {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.role-desc {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* ════════════════════════════════════════════
+   ROLE SELECTED BADGE
+   ════════════════════════════════════════════ */
+.role-selected-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--neu-shadow-in);
+  border: 1px solid var(--border-subtle);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  margin-bottom: 4px;
+  transition: color var(--dur-fast);
+}
+.role-selected-badge:hover { color: var(--primary); }
+
+/* ════════════════════════════════════════════
+   AUTH FORM HELPERS
+   ════════════════════════════════════════════ */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.auth-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.forgot-link {
+  font-size: 0.8rem;
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity var(--dur-fast);
+}
+.forgot-link:hover { opacity: 0.75; }
+
+.btn-signin {
+  width: 100%;
+  padding: 14px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 6px 6px 16px rgba(79,125,219,0.35), -3px -3px 10px rgba(255,255,255,0.7);
+  transition:
+    box-shadow var(--dur-mid) var(--ease-out),
+    transform var(--dur-fast),
+    filter var(--dur-fast);
+  letter-spacing: 0.01em;
+}
+.btn-signin:hover {
+  box-shadow: 8px 8px 20px rgba(79,125,219,0.45), -4px -4px 12px rgba(255,255,255,0.8);
+  transform: translateY(-1px);
+}
+.btn-signin:active { transform: translateY(0); filter: brightness(0.95); }
+.btn-signin.green { background: #2eab7a; box-shadow: 6px 6px 16px rgba(46,171,122,0.35), -3px -3px 10px rgba(255,255,255,0.7); }
+
+.register-text {
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+.register-text a {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+.register-text a:hover { text-decoration: underline; }
+
+.auth-notice {
+  font-size: 0.8rem;
+  color: var(--danger);
+  text-align: center;
+  font-weight: 500;
+  padding: 8px;
+  background: var(--danger-light);
+  border-radius: var(--radius-sm);
+  animation: fadeIn 0.3s var(--ease-out);
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+#roleNotice.hidden,
+#authNotice.hidden { display: none; }

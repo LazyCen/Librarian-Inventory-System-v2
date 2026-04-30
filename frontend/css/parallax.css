@@ -1,0 +1,168 @@
+/**
+ * parallax.css — Parallax Scroll & Animation Effects
+ * Neumorphic Parallax UI · Librarian Inventory System
+ */
+
+/* ════════════════════════════════════════════
+   PARALLAX BACKGROUND BLOBS
+   ════════════════════════════════════════════ */
+.parallax-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.parallax-blob {
+  position: absolute;
+  border-radius: 50%;
+  will-change: transform;
+  transition: transform 0.1s linear;
+}
+
+.blob-1 {
+  width: 500px; height: 500px;
+  top: -100px; right: -150px;
+  background: radial-gradient(circle, rgba(79,125,219,0.07) 0%, transparent 70%);
+}
+.blob-2 {
+  width: 400px; height: 400px;
+  bottom: 10%; left: -100px;
+  background: radial-gradient(circle, rgba(123,97,255,0.06) 0%, transparent 70%);
+}
+.blob-3 {
+  width: 300px; height: 300px;
+  top: 40%; right: 10%;
+  background: radial-gradient(circle, rgba(62,207,160,0.06) 0%, transparent 70%);
+}
+
+/* Dot grid pattern */
+.parallax-dots {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: radial-gradient(circle, rgba(79,125,219,0.12) 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 0.5;
+  will-change: transform;
+}
+
+/* ════════════════════════════════════════════
+   DASHBOARD CARD FLOATS
+   ════════════════════════════════════════════ */
+.float-card {
+  animation: floatCard 6s ease-in-out infinite;
+}
+.float-card:nth-child(2) { animation-delay: -1.5s; }
+.float-card:nth-child(3) { animation-delay: -3s; }
+.float-card:nth-child(4) { animation-delay: -4.5s; }
+
+@keyframes floatCard {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+/* ════════════════════════════════════════════
+   SCROLL REVEAL KEYFRAMES
+   ════════════════════════════════════════════ */
+@keyframes revealUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes revealScale {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes revealLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes revealRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.anim-up    { animation: revealUp    0.55s var(--ease-out) both; }
+.anim-scale { animation: revealScale 0.55s var(--ease-out) both; }
+.anim-left  { animation: revealLeft  0.45s var(--ease-out) both; }
+.anim-right { animation: revealRight 0.45s var(--ease-out) both; }
+
+/* ════════════════════════════════════════════
+   LOADING SPINNER
+   ════════════════════════════════════════════ */
+.spinner {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid var(--border-subtle);
+  border-top-color: var(--primary);
+  animation: spin 0.75s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ════════════════════════════════════════════
+   DONUT CHART ANIMATION
+   ════════════════════════════════════════════ */
+.donut-svg {
+  filter: drop-shadow(0 4px 12px rgba(79,125,219,0.15));
+  overflow: visible;
+}
+.donut-segment {
+  transition: stroke-dashoffset 0.8s var(--ease-out);
+}
+.chart-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.chart-viz {
+  position: relative;
+  display: inline-flex;
+}
+.center-label { font-size: 1.5rem; }
+.center-val {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.center-sub {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* ════════════════════════════════════════════
+   STAGGER ANIMATION GROUPS
+   ════════════════════════════════════════════ */
+.stagger-group > * {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity var(--dur-slow) var(--ease-out),
+    transform var(--dur-slow) var(--ease-out);
+}
+.stagger-group.visible > *:nth-child(1) { opacity: 1; transform: none; transition-delay: 0ms; }
+.stagger-group.visible > *:nth-child(2) { opacity: 1; transform: none; transition-delay: 60ms; }
+.stagger-group.visible > *:nth-child(3) { opacity: 1; transform: none; transition-delay: 120ms; }
+.stagger-group.visible > *:nth-child(4) { opacity: 1; transform: none; transition-delay: 180ms; }
+.stagger-group.visible > *:nth-child(5) { opacity: 1; transform: none; transition-delay: 240ms; }
+.stagger-group.visible > *:nth-child(6) { opacity: 1; transform: none; transition-delay: 300ms; }
+
+/* ════════════════════════════════════════════
+   MOBILE MENU OVERLAY
+   ════════════════════════════════════════════ */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(43,48,60,0.15);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 1800;
+  animation: overlayIn var(--dur-mid) var(--ease-out);
+}
+.sidebar-overlay.hidden { display: none; }

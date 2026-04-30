@@ -1,0 +1,916 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Librarian Inventory System</title>
+    <meta name="description" content="Librarian Inventory System — manage and track your library resources with ease." />
+
+    <!-- Design System CSS (modularized) -->
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/auth.css" />
+    <link rel="stylesheet" href="css/parallax.css" />
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <style>
+      /* ── Inline overrides for legacy JS compatibility ── */
+      .auth-input  { @apply input-neu; }
+      .form-input  { display: block; }
+
+      /* Dashboard containers for JS injection */
+      .dash-borrowed-container,
+      .dash-returned-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 4px 0;
+        max-height: 340px;
+        overflow-y: auto;
+      }
+      .history-list { display: flex; flex-direction: column; gap: 14px; margin-top: 16px; }
+      .category-list { display: flex; flex-direction: column; gap: 8px; }
+
+      .bins-title {
+        font-family: var(--font-display);
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+      }
+
+      /* Quick actions panel */
+      .librarian-panel { margin-bottom: 4px; }
+      .librarian-widget {
+        background: var(--bg);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--neu-shadow-sm);
+        border: 1px solid var(--border);
+        padding: 20px 22px;
+      }
+      .librarian-widget h3 {
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 14px;
+      }
+      .librarian-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+      /* Legacy form compat */
+      .form-input,
+      .auth-input,
+      .filter-select {
+        width: 100%;
+        padding: 11px 14px;
+        background: var(--surface);
+        border: 1px solid rgba(255,255,255,0.75);
+        border-radius: var(--radius-sm);
+        box-shadow: inset 4px 4px 10px #C8CAD0, inset -4px -4px 10px #FFFFFF;
+        font-family: var(--font-body);
+        font-size: 0.88rem;
+        color: var(--text-primary);
+        outline: none;
+        transition: box-shadow var(--dur-mid) var(--ease-out), border-color var(--dur-mid);
+        appearance: none;
+      }
+      .form-input:focus,
+      .auth-input:focus,
+      .filter-select:focus {
+        border-color: var(--primary);
+        box-shadow: inset 3px 3px 8px #C5C8CE, inset -3px -3px 8px #FFFFFF, 0 0 0 3px var(--primary-glow);
+      }
+      select.form-input,
+      select.auth-input,
+      select.filter-select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238C93A8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: calc(100% - 12px) center;
+        padding-right: 36px;
+      }
+
+      /* Legacy button overrides */
+      .btn-primary { @apply btn btn-primary; }
+      .btn-secondary {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 10px 20px;
+        background: var(--bg);
+        color: var(--text-secondary);
+        border: none;
+        border-radius: var(--radius-full);
+        box-shadow: var(--neu-shadow-out);
+        font-family: var(--font-body);
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: box-shadow var(--dur-mid) var(--ease-out), transform var(--dur-fast);
+      }
+      .btn-secondary:hover { box-shadow: var(--neu-shadow-hover); transform: translateY(-1px); }
+      .btn-secondary:active { box-shadow: var(--neu-shadow-in); transform: none; }
+
+      /* Mobile menu toggle (hidden in new layout, kept for JS) */
+      .mobile-menu-toggle { display: none; }
+
+      /* ── Nav link item compat for onclick ── */
+      .nav-link-item { font-family: var(--font-body); }
+
+      /* ── Inline hidden fields ── */
+      #borrowerFieldGroup.hidden,
+      #returnerFieldGroup.hidden { display: none; }
+
+      /* Modal form body padding */
+      .modal-content form { padding: 24px 28px; }
+      .modal-content .form-group:last-child { margin-bottom: 0; }
+
+      /* animate-fade-in compat */
+      .animate-fade-in { animation: authCardIn 0.5s var(--ease-spring) both; }
+      @keyframes authCardIn {
+        from { opacity: 0; transform: translateY(20px) scale(0.97); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <!-- ═══════════════════════════════════════════════════
+         PARALLAX BACKGROUND LAYER (always visible)
+    ════════════════════════════════════════════════════ -->
+    <div class="parallax-bg" aria-hidden="true">
+      <div class="parallax-dots"></div>
+      <div class="parallax-blob blob-1"></div>
+      <div class="parallax-blob blob-2"></div>
+      <div class="parallax-blob blob-3"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         AUTH SECTION
+    ════════════════════════════════════════════════════ -->
+    <div id="auth-section" class="auth-page login-body">
+
+      <!-- Floating Books Background Layer -->
+      <div class="books-layer" id="booksLayer"></div>
+
+      <!-- Auth Card -->
+      <div class="auth-card glass-container" style="width:100%;max-width:420px;">
+
+        <!-- Logo Row -->
+        <div class="auth-logo-row login-logo-row">
+          <div class="auth-logo-icon-wrap">
+            <i class="fas fa-book-open login-logo-icon"></i>
+          </div>
+          <span class="auth-system-title login-system-title">Librarian Inventory System</span>
+        </div>
+
+        <!-- ROLE SELECTOR -->
+        <div id="roleSelector" style="display:flex;flex-direction:column;gap:14px;">
+          <p class="role-select-label">I am a...</p>
+          <div class="role-picker-grid">
+            <button type="button" id="roleBtn-faculty" class="role-picker-btn"
+                    onclick="selectRole('Faculty')">
+              <span class="role-icon"><i class="fas fa-chalkboard-teacher"></i></span>
+              <span class="role-name">Faculty</span>
+              <span class="role-desc">Full access</span>
+            </button>
+            <button type="button" id="roleBtn-student" class="role-picker-btn"
+                    onclick="selectRole('Student')">
+              <span class="role-icon"><i class="fas fa-user-graduate"></i></span>
+              <span class="role-name">Student</span>
+              <span class="role-desc">View access</span>
+            </button>
+          </div>
+          <p id="roleNotice" class="auth-notice hidden"></p>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <form id="loginForm" class="auth-form" style="display:none;flex-direction:column;gap:14px;">
+          <div class="role-selected-badge" onclick="goBackToRoleSelection()"
+               style="cursor:pointer;" title="Click to change role">
+            <span id="loginRoleBadgeContent"></span>
+            <i class="fas fa-chevron-right" style="font-size:0.7rem;margin-left:auto;opacity:0.5;"></i>
+          </div>
+          <div>
+            <label class="auth-label" for="loginIdentifier">Email or ID Number</label>
+            <input id="loginIdentifier" type="text" required class="auth-input form-input"
+                   placeholder="Email or ID Number" />
+          </div>
+          <div>
+            <label class="auth-label" for="loginPassword">Password</label>
+            <div class="input-wrapper">
+              <input id="loginPassword" type="password" required class="auth-input form-input"
+                     placeholder="Password" style="padding-right:42px;" />
+              <button type="button" class="toggle-pw" onclick="togglePw('loginPassword',this)" tabindex="-1">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <div style="text-align:left;">
+            <a href="#" class="forgot-link">Forgot Password?</a>
+          </div>
+          <button type="submit" class="btn-signin">Sign in</button>
+          <p class="register-text">
+            Don't have an account yet?
+            <a href="#" onclick="toggleAuth(true)">Register for free</a>
+          </p>
+        </form>
+
+        <!-- SIGNUP FORM -->
+        <form id="signupForm" class="auth-form" style="display:none;flex-direction:column;gap:14px;">
+          <div id="signupFields" style="display:flex;flex-direction:column;gap:14px;">
+            <div class="role-selected-badge" id="roleSelectedBadge"
+                 onclick="goBackToRoleSelection()" style="cursor:pointer;" title="Click to change role"></div>
+            <div>
+              <label class="auth-label" for="signupName">Full Name</label>
+              <input id="signupName" type="text" required class="auth-input form-input" placeholder="John W. Doe" />
+            </div>
+            <div>
+              <label class="auth-label" for="signupId">ID Number</label>
+              <input id="signupId" type="text" required class="auth-input form-input" placeholder="1234-5-6789" />
+            </div>
+            <div>
+              <label class="auth-label" for="signupEmail">Email</label>
+              <input id="signupEmail" type="email" required class="auth-input form-input" placeholder="example@gsu.edu.ph" />
+            </div>
+            <label class="auth-label" for="signupPassword">Password</label>
+            <div class="input-wrapper">
+              <input id="signupPassword" type="password" required class="auth-input form-input"
+                     placeholder="Password" style="padding-right:42px;" />
+              <button type="button" class="toggle-pw" onclick="togglePw('signupPassword',this)" tabindex="-1">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+            <button type="submit" class="btn-signin green">Create Account</button>
+          </div>
+          <p class="register-text">
+            Already have an account?
+            <a href="#" onclick="toggleAuth(false)">Log In</a>
+          </p>
+        </form>
+
+        <div id="authNotice" class="auth-notice hidden"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         MAIN APP
+    ════════════════════════════════════════════════════ -->
+    <div id="main-app" class="app-container hidden">
+
+      <!-- ── Hamburger Button ────────────────────── -->
+      <button id="hamburgerBtn" class="hamburger-btn" aria-label="Toggle navigation" aria-expanded="false">
+        <span class="ham-line"></span>
+        <span class="ham-line"></span>
+        <span class="ham-line"></span>
+      </button>
+
+      <!-- ── Full-Screen Nav Overlay ────────────── -->
+      <nav id="navOverlay" class="nav-overlay" role="navigation" aria-hidden="true">
+        <div class="nav-overlay-inner">
+          <div class="nav-overlay-logo">
+            <i class="fas fa-book-open" style="color:var(--primary);margin-right:10px;"></i>
+            Librarian Inventory System
+          </div>
+
+          <div class="nav-links-grid">
+            <button class="nav-link-item" data-view="dashboard" onclick="switchView('dashboard')">
+              <i class="fas fa-gauge-high"></i> Dashboard
+            </button>
+            <button class="nav-link-item" id="navBinsStatus" data-view="bins" onclick="switchView('bins')">
+              <i class="fas fa-boxes-stacked"></i> Containers
+            </button>
+            <button class="nav-link-item" data-view="list" onclick="showAllItems()">
+              <i class="fas fa-book"></i> Books
+            </button>
+            <button class="nav-link-item" id="navRequests" data-view="requests" onclick="switchView('requests')">
+              <i class="fas fa-envelope-open-text"></i>
+              Access Requests
+              <span id="requestBadge" class="nav-badge hidden">0</span>
+            </button>
+            <button class="nav-link-item" id="navHistory" data-view="history" onclick="switchView('history')">
+              <i class="fas fa-clock-rotate-left"></i> Reading History
+            </button>
+          </div>
+
+          <div class="nav-overlay-logout">
+            <button onclick="handleLogout()" class="btn-neu btn"
+                    style="gap:10px;padding:12px 28px;">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      <!-- ── Top Header Bar ─────────────────────── -->
+      <header class="top-header top-nav">
+        <div class="header-brand">Librarian Inventory System</div>
+
+        <!-- Hidden mobile toggle for JS compat -->
+        <button id="mobileMenuToggle" class="mobile-menu-toggle" style="display:none;">
+          <i class="fas fa-bars"></i>
+        </button>
+
+        <div class="header-spacer"></div>
+
+        <div class="search-bar">
+          <i class="fas fa-search"></i>
+          <input type="text" id="searchQuery" placeholder="Search by title or category..."
+                 onkeyup="handleSearch()" />
+        </div>
+
+        <div class="header-actions">
+          <button class="btn-primary btn" id="registerBookBtn" onclick="openAddItemModal()">
+            <i class="fas fa-plus"></i>
+            <span>Register Book</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- ── Main Content ───────────────────────── -->
+      <main class="main-content">
+
+        <!-- Page Title Bar -->
+        <div class="dashboard-header reveal">
+          <div class="page-title">
+            <span id="currentViewTitle">Dashboard</span>
+          </div>
+          <div class="filter-actions">
+            <button id="filterBtn" class="btn-secondary" onclick="cycleSortMode()">
+              <i class="fas fa-arrow-down-short-wide"></i> Sort
+            </button>
+          </div>
+        </div>
+
+        <!-- ── DASHBOARD VIEW ─────────────────── -->
+        <div id="view-dashboard" class="view-content hidden">
+
+          <!-- ── HERO IMAGE SECTION ─────────────── -->
+          <div class="hero-section reveal">
+            <div class="hero-image-wrap">
+              <img src="library-hero.png" alt="Library shelves filled with books" class="hero-img" />
+              <div class="hero-overlay">
+                <p class="hero-eyebrow">Librarian Inventory System</p>
+                <h2 class="hero-heading">Books so good,<br>even your procrastination takes a break.</h2>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stats Grid — pure text, no icons -->
+          <div class="stats-grid stagger-group reveal" style="margin-top:22px;">
+            <div class="stats-card stats-card--text">
+              <div class="stats-title">Total Books</div>
+              <div class="stats-number" id="dashTotalBooks">0</div>
+              <div class="stats-label">In collection</div>
+            </div>
+            <div class="stats-card stats-card--text">
+              <div class="stats-title">Categories</div>
+              <div class="stats-number" id="dashTotalTags">0</div>
+              <div class="stats-label">Active tags</div>
+            </div>
+            <div class="stats-card stats-card--text" id="dashBinStatusCard">
+              <div class="stats-title">Containers</div>
+              <div class="stats-number" id="dashTotalBins">3</div>
+              <div class="stats-label">Status types</div>
+            </div>
+            <div class="stats-card stats-card--text">
+              <div class="stats-title">Recent Adds</div>
+              <div class="stats-number" id="dashRecentItems">0</div>
+              <div class="stats-label">Added today</div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="librarian-panel reveal reveal-delay-1" style="margin-top:24px;">
+            <div class="librarian-widget">
+              <h3>Quick Actions</h3>
+              <div class="librarian-actions">
+                <button class="btn-secondary" onclick="filterRecentItems()">
+                  <i class="fas fa-star"></i> New Arrivals
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mid Split: Categories + Borrowed -->
+          <div class="dashboard-split-grid dashboard-section-wrapper reveal reveal-delay-2">
+
+            <!-- Categories Donut -->
+            <div class="chart-card">
+              <div class="chart-header">
+                <span class="chart-title">Categories</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:20px;">
+                <div class="chart-viz">
+                  <svg class="donut-svg" viewBox="0 0 200 200" width="200" height="200"
+                       id="dashDonutChart"><!-- injected --></svg>
+                  <div class="chart-center">
+                    <div class="center-label" id="donutCenterIcon"></div>
+                    <div class="center-val" id="donutCenterText" style="font-size:0.9rem;">Category</div>
+                    <div class="center-sub" id="donutCenterSub" style="font-size:0.75rem;">Loading...</div>
+                  </div>
+                </div>
+                <div class="category-list" id="dashCategoryList"
+                     style="width:100%;max-height:250px;overflow-y:auto;"></div>
+              </div>
+            </div>
+
+            <!-- Borrowed Books -->
+            <div class="chart-card">
+              <div class="chart-header">
+                <span class="chart-title">Borrowed</span>
+              </div>
+              <div id="dashBorrowedList" class="dash-borrowed-container"></div>
+            </div>
+          </div>
+
+          <!-- Returned Books -->
+          <div class="dashboard-section-wrapper reveal reveal-delay-3">
+            <div class="chart-card">
+              <div class="chart-header">
+                <span class="chart-title">Recently Returned Books</span>
+              </div>
+              <div id="dashReturnedList" class="dash-returned-container"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── BOOKS LIST VIEW ─────────────────── -->
+        <div id="view-list" class="view-content hidden">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;" class="reveal">
+            <span style="font-weight:700;color:var(--text-primary);">Books Records</span>
+            <span id="itemCount" style="color:var(--text-muted);font-size:0.88rem;">0 Titles</span>
+          </div>
+          <div class="list-toolbar reveal reveal-delay-1">
+            <button class="btn-secondary" onclick="switchView('dashboard')">
+              <i class="fas fa-arrow-left"></i>
+              Back to <span class="dashboard-text">Dashboard</span>
+            </button>
+          </div>
+
+          <!-- Advanced Filters -->
+          <div class="filter-section animate-fade-in reveal reveal-delay-2">
+            <div class="filter-group">
+              <label class="filter-label">Subject</label>
+              <select id="filterSubject" class="filter-select" onchange="handleAdvancedFilter()">
+                <option value="">All Subjects</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label class="filter-label">Year</label>
+              <select id="filterYear" class="filter-select" onchange="handleAdvancedFilter()">
+                <option value="">All Years</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label class="filter-label">Availability</label>
+              <select id="filterAvailability" class="filter-select" onchange="handleAdvancedFilter()">
+                <option value="">All Statuses</option>
+                <option value="available">Available</option>
+                <option value="borrowed">Borrowed</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label class="filter-label">Faculty Rec</label>
+              <select id="filterFacultyRec" class="filter-select" onchange="handleAdvancedFilter()">
+                <option value="">All Books</option>
+                <option value="yes">Recommended</option>
+              </select>
+            </div>
+            <div class="filter-group" style="justify-content:flex-end;align-items:flex-end;">
+              <button class="btn-secondary" style="padding:9px 14px;font-size:0.8rem;"
+                      onclick="resetAdvancedFilters()">
+                <i class="fas fa-rotate-left"></i> Reset
+              </button>
+            </div>
+          </div>
+
+          <div id="inventoryList" class="item-grid stagger-group"></div>
+        </div>
+
+        <!-- ── CONTAINERS VIEW ────────────────── -->
+        <div id="view-bins" class="view-content hidden">
+          <h2 class="bins-title reveal">Status Overview</h2>
+          <div id="binStatus" class="bins-grid stagger-group"></div>
+        </div>
+
+        <!-- ── REQUESTS VIEW ──────────────────── -->
+        <div id="view-requests" class="view-content hidden">
+          <div class="view-header reveal">
+            <h2 class="view-title">Book Access Requests</h2>
+            <p class="view-subtitle">Monitor and manage your requests for restricted library materials</p>
+          </div>
+          <div class="filter-section animate-fade-in reveal reveal-delay-1">
+            <div class="filter-group">
+              <label class="filter-label">Status Filter</label>
+              <select id="requestStatusFilter" class="filter-select" onchange="renderRequestsView()">
+                <option value="all">All Requests</option>
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+            </div>
+          </div>
+          <div id="requestsList" class="item-grid stagger-group"></div>
+        </div>
+
+        <!-- ── HISTORY VIEW ───────────────────── -->
+        <div id="view-history" class="view-content hidden">
+          <div class="view-header reveal">
+            <h2 class="view-title">Reading History</h2>
+            <p class="view-subtitle">Track your reading progress and sessions</p>
+          </div>
+          <div id="historyList" class="history-list stagger-group"></div>
+        </div>
+
+      </main><!-- /main-content -->
+
+      <!-- ── Right Sidebar: Users Panel ─────── -->
+      <aside class="right-sidebar">
+        <div class="users-panel-wrap reveal">
+          <div class="users-panel-header">
+            <span class="users-panel-title">
+              <i class="fas fa-users"></i> Users
+            </span>
+            <span class="users-count-badge" id="usersOnlineCount">All Offline</span>
+          </div>
+          <div id="usersList"></div>
+        </div>
+      </aside>
+
+    </div><!-- /main-app -->
+
+    <!-- ═══════════════════════════════════════════════════
+         MODALS
+    ════════════════════════════════════════════════════ -->
+
+    <!-- Add/Edit Book Modal -->
+    <div id="addItemModal" class="modal-overlay hidden">
+      <div class="modal-content animate-fade-in">
+        <div class="modal-header">
+          <h3 id="itemModalTitle" class="modal-title">Register New Book</h3>
+          <button onclick="closeAddItemModal()" class="modal-close-btn" aria-label="Close">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <form id="addItemForm">
+          <div class="form-group">
+            <label class="form-label">Book Title</label>
+            <input type="text" id="itemName" class="form-input"
+                   placeholder="e.g. Fatty the Fat Lazy Cat" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Author Name</label>
+            <input type="text" id="itemAuthor" class="form-input" placeholder="e.g. Cathy H." />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Categories</label>
+            <input type="text" id="itemTags" class="form-input"
+                   placeholder="e.g. Fiction, Non-Fiction, Academic Work" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Container</label>
+            <select id="itemBinSelection" class="form-input" onchange="toggleBorrowerField()"
+                    style="cursor:pointer;">
+              <option value="Added">Register</option>
+            </select>
+          </div>
+
+          <!-- Faculty-only fields -->
+          <div id="facultyOnlyFields">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+              <div class="form-group">
+                <label class="form-label">ISBN</label>
+                <input type="text" id="itemISBN" class="form-input" placeholder="978-3-16-148410-0" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Publication Year</label>
+                <input type="number" id="itemYear" class="form-input" placeholder="2024" />
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+              <div class="form-group">
+                <label class="form-label">Department</label>
+                <input type="text" id="itemDept" class="form-input" placeholder="e.g. CST, CBM" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Subject</label>
+                <input type="text" id="itemSubject" class="form-input" placeholder="e.g. CS01, CS06" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Keywords</label>
+              <input type="text" id="itemKeywords" class="form-input"
+                     placeholder="e.g. logic, algorithms, coding" />
+            </div>
+            <div class="form-group">
+              <!-- Restricted toggle -->
+              <div style="display:flex;align-items:center;gap:10px;background:var(--surface);
+                          padding:12px 14px;border-radius:var(--radius-sm);
+                          box-shadow:var(--neu-shadow-in);margin-bottom:10px;">
+                <input type="checkbox" id="itemRestricted" style="width:18px;height:18px;cursor:pointer;
+                       accent-color:var(--primary);" />
+                <label for="itemRestricted" style="margin:0;cursor:pointer;font-weight:600;
+                       font-size:0.85rem;color:var(--text-secondary);">
+                  Restricted Access (Requires approval for students)
+                </label>
+              </div>
+              <!-- Faculty Rec toggle -->
+              <div style="display:flex;align-items:center;gap:10px;background:var(--surface);
+                          padding:12px 14px;border-radius:var(--radius-sm);
+                          box-shadow:var(--neu-shadow-in);">
+                <input type="checkbox" id="itemFacultyRec" style="width:18px;height:18px;cursor:pointer;
+                       accent-color:var(--primary);" />
+                <label for="itemFacultyRec" style="margin:0;cursor:pointer;font-weight:600;
+                       font-size:0.85rem;color:var(--text-secondary);">
+                  Faculty Recommended
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div id="borrowerFieldGroup" class="form-group hidden" style="margin-bottom:20px;">
+            <label class="form-label">Who borrowed this book?</label>
+            <input type="text" id="itemBorrower" class="form-input"
+                   placeholder="Enter user's name or email" />
+          </div>
+          <div id="returnerFieldGroup" class="form-group hidden" style="margin-bottom:20px;">
+            <label class="form-label">Who returned this book?</label>
+            <input type="text" id="itemReturner" class="form-input"
+                   placeholder="Enter user's name or email" />
+          </div>
+
+          <button id="itemSubmitBtn" type="submit" class="btn-primary btn"
+                  style="width:100%;justify-content:center;padding:14px;">
+            Add to Catalog
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div id="confirmModal" class="confirm-overlay hidden">
+      <div class="confirm-card animate-fade-in">
+        <div class="confirm-icon-wrap">
+          <i class="fas fa-triangle-exclamation"></i>
+        </div>
+        <h3 class="confirm-title">Confirm Delete</h3>
+        <p id="confirmMessage" class="confirm-message">Are you sure you want to continue?</p>
+        <div class="confirm-actions">
+          <button type="button" class="confirm-btn cancel" onclick="closeConfirmModal()">Cancel</button>
+          <button type="button" class="confirm-btn danger" onclick="confirmModalAccept()">Delete Book</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Request Access Modal -->
+    <div id="requestAccessModal" class="confirm-overlay hidden">
+      <div class="confirm-card animate-fade-in" style="text-align:center;">
+        <div class="confirm-icon-wrap"
+             style="background:var(--primary-light);color:var(--primary);margin:0 auto 16px;">
+          <i class="fas fa-circle-question"></i>
+        </div>
+        <h3 class="confirm-title" style="text-align:center;">Request Access</h3>
+        <p id="requestAccessMessage" class="confirm-message"
+           style="text-align:center;margin-bottom:24px;">
+          Are you sure you want to request access to this book?
+        </p>
+        <div class="confirm-actions" style="justify-content:center;">
+          <button type="button" class="confirm-btn cancel" onclick="closeRequestAccessModal()">Cancel</button>
+          <button type="button" class="confirm-btn danger"
+                  style="background:var(--primary);box-shadow:4px 4px 12px rgba(79,125,219,0.35);"
+                  onclick="confirmRequestAccess()">
+            Confirm Request
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar Overlay (mobile) -->
+    <div id="sidebarOverlay" class="sidebar-overlay hidden"></div>
+
+    <!-- Toast Message Box -->
+    <div id="messageBox" class="hidden"></div>
+
+    <!-- PDF Reader Modal -->
+    <div id="pdfReaderModal" class="pdf-modal-overlay hidden">
+      <div class="pdf-modal-content animate-fade-in">
+        <div class="pdf-modal-header">
+          <div class="pdf-header-left">
+            <h3 id="pdfBookTitle" class="pdf-modal-title">Book Title</h3>
+          </div>
+          <div class="pdf-header-controls">
+            <button id="pdfBtnHighlight" class="pdf-btn" onclick="toggleHighlightMode()"
+                    title="Toggle Highlight Mode"><i class="fas fa-highlighter"></i></button>
+            <button id="pdfBtnBookmark" class="pdf-btn" onclick="bookmarkCurrentPage()"
+                    title="Bookmark Page"><i class="fas fa-bookmark"></i></button>
+            <div class="pdf-pagination">
+              <button onclick="changePdfPage(-1)" class="pdf-btn">
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              <span class="pdf-page-info">
+                Page <span id="pdfPageNum">1</span> of <span id="pdfPageCount">--</span>
+              </span>
+              <button onclick="changePdfPage(1)" class="pdf-btn">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+            <button onclick="closePDFReader()" class="pdf-btn pdf-btn-close">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        <div class="pdf-modal-body" id="pdfContainer">
+          <canvas id="pdfCanvas"></canvas>
+          <div id="pdfHighlightsLayer" class="pdf-highlights-layer"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         SCRIPTS
+    ════════════════════════════════════════════════════ -->
+
+    <!-- Animation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+    <!-- Original Utility Scripts (preserved for business logic) -->
+    <script src="users/src/js/utils/helpers.js"></script>
+    <script src="users/src/js/utils/storage.js"></script>
+    <script src="users/src/js/utils/togglePw.js"></script>
+    <script src="users/src/js/utils/toggleAuth.js"></script>
+    <script src="users/src/js/utils/users.js"></script>
+    <script src="users/src/js/utils/handleLogin.js"></script>
+    <script src="users/src/js/utils/handleLogout.js"></script>
+    <script src="users/src/js/utils/spawnBooks.js"></script>
+    <script src="users/src/js/utils/loginAnimations.js"></script>
+
+    <!-- Business Logic Scripts -->
+    <script src="users/faculty/javascript/faculty.js"></script>
+    <script src="users/student/javascript/student.js"></script>
+    <script src="users/src/js/main.js"></script>
+    <script src="users/faculty/javascript/reports.js"></script>
+
+    <!-- ── UI Enhancement Script (self-contained, no module deps) ── -->
+    <script>
+    (function () {
+      'use strict';
+
+      /* ─── Hamburger Nav ────────────────────────── */
+      const hamburgerBtn = document.getElementById('hamburgerBtn');
+      const navOverlay   = document.getElementById('navOverlay');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
+      let navOpen = false;
+
+      function openNav() {
+        navOpen = true;
+        hamburgerBtn.classList.add('open');
+        hamburgerBtn.setAttribute('aria-expanded', 'true');
+        navOverlay.classList.add('open');
+        navOverlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeNav() {
+        navOpen = false;
+        hamburgerBtn.classList.remove('open');
+        hamburgerBtn.setAttribute('aria-expanded', 'false');
+        navOverlay.classList.remove('open');
+        navOverlay.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      }
+
+      hamburgerBtn?.addEventListener('click', () => navOpen ? closeNav() : openNav());
+      navOverlay?.addEventListener('click', (e) => { if (e.target === navOverlay) closeNav(); });
+      sidebarOverlay?.addEventListener('click', closeNav);
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && navOpen) closeNav(); });
+
+      // Close nav when any nav-link-item is clicked
+      document.querySelectorAll('.nav-link-item').forEach(btn => {
+        btn.addEventListener('click', () => setTimeout(closeNav, 180));
+      });
+
+      /* ─── Active Nav Link ──────────────────────── */
+      function setActiveNavLink(viewName) {
+        document.querySelectorAll('.nav-link-item').forEach(el => {
+          el.classList.toggle('active', el.dataset.view === viewName);
+        });
+      }
+
+      // Patch global switchView to also update nav
+      const _origSwitchView = window.switchView;
+      window.switchView = function(name) {
+        if (_origSwitchView) _origSwitchView(name);
+        setActiveNavLink(name);
+      };
+
+      /* ─── Parallax Blobs ───────────────────────── */
+      function initParallax() {
+        const blobs = document.querySelectorAll('.parallax-blob');
+        const dots  = document.querySelector('.parallax-dots');
+        if (!blobs.length) return;
+
+        let ticking = false;
+        window.addEventListener('scroll', () => {
+          if (ticking) return;
+          requestAnimationFrame(() => {
+            const sy = window.scrollY;
+            blobs.forEach((blob, i) => {
+              const speed = 0.06 + i * 0.035;
+              const dir   = i % 2 === 0 ? 1 : -1;
+              blob.style.transform =
+                `translate3d(${dir * sy * speed * 0.25}px, ${-sy * speed}px, 0)`;
+            });
+            if (dots) dots.style.transform = `translate3d(0, ${-sy * 0.1}px, 0)`;
+            ticking = false;
+          });
+          ticking = true;
+        }, { passive: true });
+      }
+
+      /* ─── Scroll Reveal ────────────────────────── */
+      function initReveal() {
+        if (!('IntersectionObserver' in window)) return;
+
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { root: null, rootMargin: '0px 0px -50px 0px', threshold: 0.1 });
+
+        function observeAll() {
+          document.querySelectorAll('.reveal:not(.observed)').forEach(el => {
+            el.classList.add('observed');
+            observer.observe(el);
+          });
+          document.querySelectorAll('.stagger-group:not(.observed)').forEach(el => {
+            el.classList.add('observed');
+            observer.observe(el);
+          });
+        }
+
+        observeAll();
+
+        // MutationObserver to catch dynamically added elements
+        const mutation = new MutationObserver(observeAll);
+        mutation.observe(document.body, { childList: true, subtree: true });
+      }
+
+      /* ─── Mouse-follow subtle tilt on cards ─────── */
+      function initCardTilt() {
+        document.addEventListener('mousemove', (e) => {
+          const cards = document.querySelectorAll('.stats-card, .chart-card');
+          cards.forEach(card => {
+            const rect = card.getBoundingClientRect();
+            const cx = rect.left + rect.width  / 2;
+            const cy = rect.top  + rect.height / 2;
+            const dx = (e.clientX - cx) / rect.width;
+            const dy = (e.clientY - cy) / rect.height;
+
+            // Only apply if cursor is within 300px of card
+            const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
+            if (dist < 300) {
+              card.style.transform =
+                `translateY(-2px) perspective(600px) rotateY(${dx * 3}deg) rotateX(${-dy * 3}deg)`;
+            } else {
+              card.style.transform = '';
+            }
+          });
+        }, { passive: true });
+
+        document.addEventListener('mouseleave', () => {
+          document.querySelectorAll('.stats-card, .chart-card').forEach(card => {
+            card.style.transform = '';
+          });
+        });
+      }
+
+      /* ─── Init ─────────────────────────────────── */
+      document.addEventListener('DOMContentLoaded', () => {
+        initParallax();
+        initReveal();
+        initCardTilt();
+        setActiveNavLink('dashboard');
+      });
+
+      // Also run reveal after app becomes visible (login success)
+      const mainApp = document.getElementById('main-app');
+      const appObserver = new MutationObserver(() => {
+        if (!mainApp.classList.contains('hidden')) {
+          setTimeout(initReveal, 100);
+        }
+      });
+      if (mainApp) appObserver.observe(mainApp, { attributes: true, attributeFilter: ['class'] });
+
+    })();
+    </script>
+
+  </body>
+</html>

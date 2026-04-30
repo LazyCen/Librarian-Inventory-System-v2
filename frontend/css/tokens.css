@@ -1,0 +1,77 @@
+/**
+ * tokens.css — Design System Tokens
+ * Neumorphic Parallax UI · Librarian Inventory System
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=Playfair+Display:wght@400;500;600&display=swap');
+
+:root {
+  /* ── Core Surface ─────────────────────────────── */
+  --bg:              #F0F0F3;
+  --bg-light:        #F8F8FB;
+  --surface:         #ECEFF3;
+  --surface-raised:  #F4F6F9;
+
+  /* ── Neumorphic Shadows ───────────────────────── */
+  --neu-shadow-out:
+    6px 6px 14px #C8CAD0,
+    -6px -6px 14px #FFFFFF;
+  --neu-shadow-in:
+    inset 4px 4px 10px #C8CAD0,
+    inset -4px -4px 10px #FFFFFF;
+  --neu-shadow-card:
+    8px 8px 20px #C2C4CB,
+    -8px -8px 20px #FFFFFF;
+  --neu-shadow-sm:
+    4px 4px 8px #CACCD2,
+    -4px -4px 8px #FFFFFF;
+  --neu-shadow-hover:
+    10px 10px 24px #BABCC2,
+    -10px -10px 24px #FFFFFF;
+
+  /* ── Brand Palette ───────────────────────────── */
+  --primary:         #4F7DDB;
+  --primary-light:   rgba(79, 125, 219, 0.12);
+  --primary-mid:     rgba(79, 125, 219, 0.25);
+  --primary-glow:    rgba(79, 125, 219, 0.18);
+  --accent:          #7B61FF;
+  --accent-light:    rgba(123, 97, 255, 0.12);
+  --success:         #3ECFA0;
+  --success-light:   rgba(62, 207, 160, 0.14);
+  --warning:         #F5A623;
+  --warning-light:   rgba(245, 166, 35, 0.14);
+  --danger:          #E85D75;
+  --danger-light:    rgba(232, 93, 117, 0.14);
+
+  /* ── Typography ──────────────────────────────── */
+  --font-display:    'Playfair Display', Georgia, serif;
+  --font-body:       'DM Sans', system-ui, sans-serif;
+
+  --text-primary:    #2D3142;
+  --text-secondary:  #5A6070;
+  --text-muted:      #8C93A8;
+  --text-inverse:    #FFFFFF;
+
+  /* ── Borders & Radius ────────────────────────── */
+  --border:          rgba(255,255,255,0.82);
+  --border-subtle:   rgba(180,185,200,0.35);
+  --radius-xs:       8px;
+  --radius-sm:       12px;
+  --radius-md:       18px;
+  --radius-lg:       24px;
+  --radius-xl:       32px;
+  --radius-full:     9999px;
+
+  /* ── Layout ──────────────────────────────────── */
+  --sidebar-w:       260px;
+  --right-sidebar-w: 300px;
+  --header-h:        70px;
+
+  /* ── Motion ──────────────────────────────────── */
+  --ease-spring:     cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out:        cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out:     cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast:        180ms;
+  --dur-mid:         320ms;
+  --dur-slow:        480ms;
+}
